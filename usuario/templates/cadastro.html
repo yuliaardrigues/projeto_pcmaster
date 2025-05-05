@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block body %}
+
+
+
+    {% if messages %}
+    {% for message in messages %}
+    <div class="ml-3 py-4 alert alert-{{ message.tags }}">
+        {{ message }}
+    </div>
+    
+    {% endfor %}
+    {% endif %}
+    <form method="POST" action="{% url 'cadastro' %}" >
+        {% csrf_token %}
+        <input type="text" placeholder="name" name = "username">
+        <br>
+        <br>
+        <input type="text" placeholder="email" name = "email">
+        <br>
+        <br>
+        <input type="password" placeholder="password" name = "password">
+        <br>
+        <br>        
+        <input type="password" placeholder="confirm password" name = "confirm_password">
+        <br>
+        <br>
+        <input type="submit" value="Cadastrar">
+    </form>
+
+{% endblock %}

@@ -1,0 +1,61 @@
+from django.shortcuts import render, redirect
+from django.http import HttpResponse
+from django.contrib.auth.models import User
+from django.contrib.messages import constants
+from django.contrib import messages
+from django.contrib.auth import authenticate, login as auth_login
+
+
+def cadastro(request):
+    if request.method == 'GET':
+        return render(request, 'cadastro.html')
+    else:
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        confirm_password = request.POST.get('confirm_password')
+
+        if len(username.strip()) == 0 or len(email.strip()) == 0:
+            return redirect('cadastro')
+            
+
+        if not password == confirm_password:
+            messages.info(request, 'As senhas não coincidem.')
+            return redirect('cadastro')
+        
+        if len(password) < 6:
+            messages.error(request, 'A senha deve ter pelo menos 6 caracteres.')
+            return redirect('cadastro')
+        
+
+        
+        if User.objects.filter(email=email).exists():
+            messages.error(request,'Esse nome de usuário já existe.')
+            return redirect('cadastro')
+        
+        usuario = User.objects.create_user(username=username, email=email, password=password)
+        usuario.save()
+        messages.success(request, 'Usuário cadastrado com sucesso.')
+        
+
+        return redirect('login')
+
+def login(request):
+    if request.method == 'GET':
+        return render(request, 'login.html')
+    else:
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+
+        user = authenticate(request, email
+        =email, password=password)
+
+        if user:
+            auth_login(request, user)
+            return redirect('/')
+        messages.error(request, 'Usuário ou senha inválidos.')
+        return redirect('login')
+    
+        
+        
+    
