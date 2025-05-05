@@ -1,4 +1,6 @@
 from django.db import models
+import datetime
+
 
 class Categoria(models.Model):
     nome = models.CharField(max_length=200)
@@ -8,10 +10,10 @@ class Categoria(models.Model):
 
     
 class Produto(models.Model):
-    categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
+    categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE, default=1)
     nome = models.CharField(max_length=200)
-    descricao = models.TextField()
-    preco = models.DecimalField(max_digits=10, decimal_places=2)
+    descricao = models.TextField(max_length=250, default='', blank=True)
+    preco = models.DecimalField(default=0, max_digits=10, decimal_places=2)
     imagem = models.ImageField(upload_to='produtos_thumb')
 
     def __str__(self):
@@ -33,9 +35,11 @@ class CarrinhoProduto(models.Model):
     
 
 class Pedido(models.Model):
-        data_pedido = models.DateTimeField(auto_now_add=True)
-        status = models.CharField(choices=[("0", "Pendente"), ("1", "Enviado"), ("2", "Entregue")], max_length=2)
+        Produto = models.ForeignKey(Produto, on_delete=models.CASCADE)
+        quantidade = models.IntegerField(default=1)
+        status = models.BooleanField(default=False)
         valor_total = models.DecimalField(max_digits=10, decimal_places=2)
+        date = models.DateField(default=datetime.datetime.today)
 
         def __str__(self):
-            return f"Pedido {self.id} - {self.usuario.nome}"
+            return f"Pedido {self.Produto}"   
