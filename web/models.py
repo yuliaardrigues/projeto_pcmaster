@@ -1,5 +1,9 @@
 from django.db import models
 import datetime
+from datetime import timedelta
+from django.utils import timezone
+from django.utils.timezone import now
+
 
 
 class Categoria(models.Model):
@@ -20,6 +24,8 @@ class Produto(models.Model):
 
     sale = models.BooleanField(default=False)
     sale_price = models.DecimalField(default=0, max_digits=6, decimal_places=2)
+    nota = models.FloatField(default=0)
+
 
 
     def __str__(self):
@@ -30,6 +36,12 @@ class Produto(models.Model):
         if self.preco > 0 and self.sale_price < self.preco:
             return int(((self.preco - self.sale_price) / self.preco) * 100)
         return 0
+    
+    def estrelas_cheias(self):
+        return int(self.nota)
+
+    def estrelas_meia(self):
+        return self.nota - int(self.nota) >= 0.5
 
 
 #carrinho de compras 

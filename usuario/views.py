@@ -44,15 +44,14 @@ def login(request):
     if request.method == 'GET':
         return render(request, 'login.html')
     else:
-        email = request.POST.get('email')
+        username = request.POST.get('username')
         password = request.POST.get('password')
 
-        user = authenticate(request, email
-        =email, password=password)
+        user = authenticate(request, username=username, password=password)
 
         if user:
             auth_login(request, user)
-            return redirect('/')
+            return redirect('home')
         messages.error(request, 'Usuário ou senha inválidos.')
         return redirect('login')
     
