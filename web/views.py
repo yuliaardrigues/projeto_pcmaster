@@ -1,7 +1,7 @@
 from django.shortcuts import render
-
-# Create your views here.
-from django.shortcuts import render
+from .models import Produto, Categoria
 
 def home(request):
-    return render(request, 'home.html') 
+    produto = Produto.objects.all()
+    categorias = Categoria.objects.all()
+    return render(request, 'home/home.html', {'produtos':produto, 'categorias': categorias} ) 

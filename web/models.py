@@ -13,11 +13,25 @@ class Produto(models.Model):
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE, default=1)
     nome = models.CharField(max_length=200)
     descricao = models.TextField(max_length=250, default='', blank=True)
-    preco = models.DecimalField(default=0, max_digits=10, decimal_places=2)
+    preco = models.DecimalField(default=0, max_digits=6, decimal_places=2)
     imagem = models.ImageField(upload_to='produtos_thumb')
+
+    # add sale
+
+    sale = models.BooleanField(default=False)
+    sale_price = models.DecimalField(default=0, max_digits=6, decimal_places=2)
+
 
     def __str__(self):
         return self.nome
+    
+    @property
+    def desconto_percentual(self):
+        if self.preco > 0 and self.sale_price < self.preco:
+            return int(((self.preco - self.sale_price) / self.preco) * 100)
+        return 0
+
+
 #carrinho de compras 
 class Carrinho(models.Model):
     estado = models.CharField(choices=[("0", "aberto"), ("1", "Finalizado")], max_length=2)
@@ -43,3 +57,11 @@ class Pedido(models.Model):
 
         def __str__(self):
             return f"Pedido {self.Produto}"   
+        
+class Subcategoria(models.Model):
+    nome = models.CharField(max_length=100)
+    categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
+    Produto = models.ForeignKey(Produto, on_delete=models.CASCADE, related_name='subcategorias', default=1)
+
+    def __str__(self):
+        return self.nome
