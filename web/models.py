@@ -2,6 +2,7 @@ from django.db import models
 import datetime
 
 
+
 class Categoria(models.Model):
     nome = models.CharField(max_length=200)
 
@@ -22,6 +23,7 @@ class Produto(models.Model):
     sale_price = models.DecimalField(default=0, max_digits=6, decimal_places=2)
 
 
+
     def __str__(self):
         return self.nome
     
@@ -30,6 +32,13 @@ class Produto(models.Model):
         if self.preco > 0 and self.sale_price < self.preco:
             return int(((self.preco - self.sale_price) / self.preco) * 100)
         return 0
+    
+ 
+    def estrelas_cheias(self):
+        return int(self.nota)
+
+    def estrelas_meia(self):
+        return self.nota - int(self.nota) >= 0.5
 
 
 #carrinho de compras 

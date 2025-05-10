@@ -8,4 +8,8 @@ def home(request):
 
 def produto(request):
     produto = Produto.objects.all()
+    return render(request, 'products/produto.html', {'produtos':produto} )
+
+def produto(request):
+    produto = Produto.objects.all()
     return render(request, 'products/produto.html', {'produtos':produto})

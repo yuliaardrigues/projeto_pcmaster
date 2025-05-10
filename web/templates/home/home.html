@@ -1,207 +1,248 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %} {% block body %}
 
-{% block body %}
+<!-- Barra superior -->
+<div
+  class="bg-green-700 text-white text-sm px-4 py-1 flex justify-between items-center"
+>
+  <span>Bem-vindo à PC MASTER!</span>
+  <div class="flex gap-2 items-center text-xs">
+    <span class="hover:underline cursor-pointer">Siga-nos</span>
+    <span class="mx-1">|</span>
+    <span class="hover:underline cursor-pointer">PT</span>
+    <span class="mx-1">|</span>
+    <span class="hover:underline cursor-pointer">BRL</span>
+  </div>
+</div>
 
+<!-- Cabeçalho principal -->
+<header
+  class="bg-green-600 text-white px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-4"
+>
+  <!-- Logo -->
+  <div class="flex items-center text-2xl font-bold">
+    <div
+      class="bg-white text-green-600 w-8 h-8 rounded-full flex items-center justify-center mr-2"
+    >
+      O
+    </div>
+    <a href="{% url 'home' %}">PC MASTER</a>
+  </div>
 
-  <!-- Barra superior -->
-<div class="bg-green-700 text-white text-sm px-4 py-1 flex justify-between items-center">
-    <span>Bem-vindo à PC MASTER!</span>
-    <div class="flex gap-2 items-center text-xs">
-      <span class="hover:underline cursor-pointer">Siga-nos</span>
-      <span class="mx-1">|</span>
-      <span class="hover:underline cursor-pointer">PT</span>
-      <span class="mx-1">|</span>
-      <span class="hover:underline cursor-pointer">BRL</span>
+  <!-- Barra de busca -->
+  <div class="flex-1 w-full max-w-2xl">
+    <div class="relative">
+      <input
+        type="text"
+        placeholder="Buscar"
+        class="w-full px-4 py-2 rounded text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-400"
+      />
+      <button class="absolute right-2 top-1/2 -translate-y-1/2 text-green-600">
+        🔍
+      </button>
     </div>
   </div>
-  
-  <!-- Cabeçalho principal -->
-  <header class="bg-green-600 text-white px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
-    <!-- Logo -->
-    <div class="flex items-center text-2xl font-bold">
-      <div class="bg-white text-green-600 w-8 h-8 rounded-full flex items-center justify-center mr-2">O</div>
-      <a href="{% url 'home' %}">PC MASTER</a>
-    </div>
-  
-    <!-- Barra de busca -->
-    <div class="flex-1 w-full max-w-2xl">
-      <div class="relative">
-        <input type="text" placeholder="Buscar"
-          class="w-full px-4 py-2 rounded text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-400">
-        <button class="absolute right-2 top-1/2 -translate-y-1/2 text-green-600">
-          🔍
+
+  <!-- Ícones de usuário -->
+  <div class="flex items-center gap-4 text-xl">
+    <a href="#" title="Favoritos" class="hover:text-gray-300">💜</a>
+    <a href="#" title="Carrinho" class="hover:text-gray-300">🛒</a>
+    <a href="#" title="Perfil" class="hover:text-gray-300">👤</a>
+  </div>
+</header>
+
+<!-- Navegação inferior -->
+<nav class="bg-white text-gray-800 px-6 py-2 border-b">
+  <div
+    class="flex flex-col md:flex-row justify-between items-center gap-4 text-sm"
+  >
+    <div class="flex flex-wrap items-center gap-4">
+      <div class="relative group">
+        <button
+          class="flex items-center gap-1 text-green-700 font-medium hover:text-green-800"
+        >
+          📂 Todas as categorias
         </button>
-      </div>
-    </div>
-  
-    <!-- Ícones de usuário -->
-    <div class="flex items-center gap-4 text-xl">
-      <a href="#" title="Favoritos" class="hover:text-gray-300">💜</a>
-      <a href="#" title="Carrinho" class="hover:text-gray-300">🛒</a>
-      <a href="#" title="Perfil" class="hover:text-gray-300">👤</a>
-    </div>
-  </header>
-  
-  <!-- Navegação inferior -->
-  <nav class="bg-white text-gray-800 px-6 py-2 border-b">
-    <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
-      <div class="flex flex-wrap items-center gap-4">
-        <div class="relative group">
-          <button class="flex items-center gap-1 text-green-700 font-medium hover:text-green-800">
-            📂 Todas as categorias
-          </button>
-        
-          <!-- Menu principal -->
-          <div class="absolute left-0 bg-white shadow-lg mt-2 rounded z-50 flex border w-[280px]
-            opacity-0 invisible group-hover:opacity-100 group-hover:visible
-            transition-all duration-200">
-            <div class="w-full">
-              {% for categoria in categorias %}
-              <div class="relative group/categoria">
-                <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100">
-                  {{ categoria.nome }}
-                </a>
-        
-                <!-- Mega menu à direita -->
-                <div class="absolute left-full top-0 w-[900px] bg-white border shadow-lg p-6 rounded hidden group-hover/categoria:block z-50"
-                     x-data="{ subcatAberta: null }">
-                  <div class="grid grid-cols-3 gap-6">
-                    
-                    <!-- Subcategorias -->
-                    <div>
-                      {% for subcat in categoria.subcategoria_set.all %}
-                      <a
-                        href="#"
-                        @click.prevent="subcatAberta === {{ subcat.id }} ? subcatAberta = null : subcatAberta = {{ subcat.id }}"
-                        class="block text-sm text-gray-700 hover:text-green-600 mb-1"
-                      >
-                        {{ subcat.nome }}
-                      </a>
-                      {% endfor %}
-                    </div>
-        
-                    <!-- Produtos ao clicar na subcategoria -->
-                    <div>
-                      <h3 class="font-bold text-gray-800 mb-3">Produtos</h3>
-                      {% for subcat in categoria.subcategoria_set.all %}
-                      <div x-show="subcatAberta === {{ subcat.id }}" x-cloak>
-                        {% for produto in subcat.produto_set.all %}
-                        <div class="flex gap-3 mb-4">
-                          <img
-                            src="{{ produto.imagem.url }}"
-                            class="w-14 h-14 object-contain border"
-                            alt="{{ produto.nome }}"
-                          />
-                          <div>
-                            <p class="text-sm font-medium truncate">{{ produto.nome }}</p>
-                            <p class="text-green-600 font-bold text-sm">{{ produto.sale_price }}</p>
-                          </div>
+
+        <div
+          class="absolute left-0 bg-white shadow-lg mt-2 rounded z-50 flex border w-[280px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200"
+        >
+          <div class="w-full">
+            {% for categoria in categorias %}
+            <div class="relative group/categoria">
+              <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100">
+                {{ categoria.nome }}
+              </a>
+
+              <div
+                class="absolute left-full top-0 w-[900px] bg-white border shadow-lg p-6 rounded hidden group-hover/categoria:block z-50"
+                x-data="{ subcatAberta: null }"
+              >
+                <div class="grid grid-cols-3 gap-6">
+                  <div>
+                    {% for subcat in categoria.subcategoria_set.all %}
+                    <a
+                      href="#"
+                      @click.prevent="subcatAberta === {{ subcat.id }} ? subcatAberta = null : subcatAberta = {{ subcat.id }}"
+                      class="block text-sm text-gray-700 hover:text-green-600 mb-1"
+                    >
+                      {{ subcat.nome }}
+                    </a>
+                    {% endfor %}
+                  </div>
+
+                  <div>
+                    <h3 class="font-bold text-gray-800 mb-3">Produtos</h3>
+                    {% for subcat in categoria.subcategoria_set.all %}
+                    <div x-show="subcatAberta === {{ subcat.id }}" x-cloak>
+                      {% for produto in subcat.produto_set.all %}
+                      <div class="flex gap-3 mb-4">
+                        <img
+                          src="{{ produto.imagem.url }}"
+                          class="w-14 h-14 object-contain border"
+                          alt="{{ produto.nome }}"
+                        />
+                        <div>
+                          <p class="text-sm font-medium truncate">
+                            {{ produto.nome }}
+                          </p>
+                          <p class="text-green-600 font-bold text-sm">
+                            {{ produto.sale_price }}
+                          </p>
                         </div>
-                        {% empty %}
-                        <p class="text-sm text-gray-500">Nenhum produto encontrado.</p>
-                        {% endfor %}
                       </div>
                       {% endfor %}
                     </div>
-        
-                    <!-- Banner -->
-                    <div class="bg-yellow-100 p-4 rounded text-center">
-                      <p class="text-lg font-bold mb-2">20% Desconto</p>
-                      <p class="text-sm mb-2">Aproveite os preços exclusivos!</p>
-                      <a
-                        href="#"
-                        class="inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 text-sm font-semibold"
-                      >
-                        SHOP NOW →
-                      </a>
-                    </div>
+                    {% endfor %}
+                  </div>
+
+                  <!-- Banner -->
+                  <div class="bg-yellow-100 p-4 rounded text-center">
+                    <p class="text-lg font-bold mb-2">20% Desconto</p>
+                    <p class="text-sm mb-2">Aproveite os preços exclusivos!</p>
+                    <a
+                      href="#"
+                      class="inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 text-sm font-semibold"
+                    >
+                      SHOP NOW →
+                    </a>
                   </div>
                 </div>
               </div>
-              {% endfor %}
             </div>
+            {% endfor %}
           </div>
         </div>
-        
-        <a  href="#" class="flex items-center gap-1 hover:text-green-600">📍 Meu Lugar</a>
-        <a href="#" class="flex items-center gap-1 hover:text-green-600">🛍 Compras</a>
-        <a href="#" class="flex items-center gap-1 hover:text-green-600">📞 Atendimento ao cliente</a>
-        <a href="#" class="flex items-center gap-1 hover:text-green-600">❓ Peça de ajuda</a>
+
       </div>
-      <div class="font-semibold text-green-700 flex items-center gap-1">
-        📞 <span>4002-8922</span>
-      </div>
+
+      <a href="#" class="flex items-center gap-1 hover:text-green-600"
+        >📍 Meu Lugar</a
+      >
+      <a href="#" class="flex items-center gap-1 hover:text-green-600"
+        >🛍 Compras</a
+      >
+      <a href="#" class="flex items-center gap-1 hover:text-green-600"
+        >📞 Atendimento ao cliente</a
+      >
+      <a href="#" class="flex items-center gap-1 hover:text-green-600"
+        >❓ Peça de ajuda</a
+      >
     </div>
-  </nav>
-  
-
-  <!-- Banner -->
-  <section class="bg-white text-center p-6">
-    <h2 class="text-xl font-semibold mb-2">Xbox Consoles</h2>
-    <p>Explore the latest consoles at the best prices.</p>
-    <button class="mt-4 px-6 py-2 bg-green-600 text-white rounded">Shop Now</button>
-  </section>
-
-  <!-- Featured Products -->
-  <section class="border rounded p-4">
-    <div class="flex justify-between items-center mb-6">
-        <h2 class="text-lg font-semibold">
-          Melhores ofertas
-        </h2>
-        <a href="{% url 'produto' %}" class="text-sm text-blue-600 hover:underline">Todos os produtos →</a>
-      </div>
-      <div class="grid grid-cols-4 md:grid-cols-6 gap-6">
-        <!-- Produto -->
-         {% for produto in produtos  %} 
-        <div class="border rounded p-6 relative">
-            {% if produto.desconto_percentual > 0 %}
-            <div class="absolute top-4 left-4 bg-red-500 text-white text-xs px-2 py-1 rounded">
-              {{ produto.desconto_percentual }}% OFF
-            </div>
-            {% endif %}
-          {% if produto.sale %}
-          <div class="absolute top-2 right-2 bg-yellow-400 text-white text-xs px-2 py-1 rounded">HOT</div>
-            {% endif %}
-          <img src="{{ produto.imagem.url }}" alt="{{produto.nome}}" class="w-full h-32 object-contain mx-auto" />
-          <div class="mt-2 text-sm font-semibold text-gray-800">{{ produto.nome }}</div>
-          <div class="text-yellow-500 text-xs mt-1">★★★★★ (32.677)</div>
-          <div class="text-gray-400 line-through text-xs">{{ produto.preco }}</div>
-          <div class="text-green-600 font-bold">{{ produto.sale_price}}</div>
-        </div>
-        {% endfor %}
-      <!-- Replique os blocos acima com outros produtos -->
+    <div class="font-semibold text-green-700 flex items-center gap-1">
+      📞 <span>4002-8922</span>
     </div>
-  </section>
+  </div>
+</nav>
 
-  <!-- Categories -->
-  <section class="bg-white p-6 mt-4">
-    <h2 class="text-xl font-bold mb-4">Browse Categories</h2>
-    <div class="flex gap-4 overflow-x-auto">
-      <div class="flex-shrink-0 bg-gray-100 p-4 rounded text-center">
-        <img src="https://via.placeholder.com/50" alt="Category" class="mx-auto">
-        <p>Headphones</p>
+<!-- Banner -->
+<section class="bg-white text-center p-6">
+  <h2 class="text-xl font-semibold mb-2">Xbox Consoles</h2>
+  <p>Explore the latest consoles at the best prices.</p>
+  <button class="mt-4 px-6 py-2 bg-green-600 text-white rounded">
+    Shop Now
+  </button>
+</section>
+
+<!-- Featured Products -->
+<section class="border rounded p-4">
+  <div class="flex justify-between items-center mb-6">
+    {% if produtos %} 
+    {% with restante=produtos.0.tempo_restante %}
+    <h2 class="text-lg font-semibold">
+      Melhores ofertas
+    </h2>
+    {% endwith %} {% endif %}
+    <a href="{% url 'produto' %}" class="text-sm text-blue-600 hover:underline"
+      >Todos os produtos →</a
+    >
+  </div>
+  <div class="grid grid-cols-4 md:grid-cols-6 gap-6">
+    <!-- Produto -->
+    {% for produto in produtos %}
+    <div class="border rounded p-6 relative">
+      {% if produto.desconto_percentual > 0 %}
+      <div
+        class="absolute top-4 left-4 bg-red-500 text-white text-xs px-2 py-1 rounded"
+      >
+        {{ produto.desconto_percentual }}% OFF
       </div>
-      <!-- Outras categorias aqui -->
-    </div>
-  </section>
-
-  <!-- Offers -->
-  <section class="p-6">
-    <h2 class="text-xl font-bold mb-4">Special Offers</h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div class="bg-yellow-100 p-4 rounded text-center">
-        <p class="font-semibold">20% OFF</p>
-        <p>On Selected Items</p>
-        <button class="mt-2 px-4 py-1 bg-green-600 text-white rounded">Shop Now</button>
+      {% endif %} {% if produto.sale %}
+      <div
+        class="absolute top-2 right-2 bg-yellow-400 text-white text-xs px-2 py-1 rounded"
+      >
+        HOT
       </div>
-      <!-- Outras ofertas -->
+      {% endif %}
+      <img
+        src="{{ produto.imagem.url }}"
+        alt="{{produto.nome}}"
+        class="w-full h-32 object-contain mx-auto"
+      />
+      <div class="mt-2 text-sm font-semibold text-gray-800">
+        {{ produto.nome }}
+      </div>
+      <div class="text-yellow-500 text-xs mt-1">★★★★★ (32.677)</div>
+      <strike class="text-gray-400">R${{ produto.preco }}</strike>
+      <div class="text-green-600 font-bold">R${{ produto.sale_price}}</div>
     </div>
-  </section>
+    {% endfor %}
+    <!-- Replique os blocos acima com outros produtos -->
+  </div>
+</section>
 
-  <!-- Footer -->
-  <footer class="bg-gray-900 text-white p-6 text-center">
-    <p>© 2025 PC MASTER. All rights reserved.</p>
-  </footer>
+<!-- Categories -->
+<section class="bg-white p-6 mt-4">
+  <h2 class="text-xl font-bold mb-4">Browse Categories</h2>
+  <div class="flex gap-4 overflow-x-auto">
+    <div class="flex-shrink-0 bg-gray-100 p-4 rounded text-center">
+      <img
+        src="https://via.placeholder.com/50"
+        alt="Category"
+        class="mx-auto"
+      />
+      <p>Headphones</p>
+    </div>
+    <!-- Outras categorias aqui -->
+  </div>
+</section>
 
+<!-- Offers -->
+<section class="p-6">
+  <h2 class="text-xl font-bold mb-4">Special Offers</h2>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="bg-yellow-100 p-4 rounded text-center">
+      <p class="font-semibold">20% OFF</p>
+      <p>On Selected Items</p>
+      <button class="mt-2 px-4 py-1 bg-green-600 text-white rounded">
+        Shop Now
+      </button>
+    </div>
+    <!-- Outras ofertas -->
+  </div>
+</section>
 
+<!-- Footer -->
+<footer class="bg-gray-900 text-white p-6 text-center">
+  <p>© 2025 PC MASTER. All rights reserved.</p>
+</footer>
 {% endblock %}
