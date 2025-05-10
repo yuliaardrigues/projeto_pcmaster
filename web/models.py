@@ -24,6 +24,10 @@ class Produto(models.Model):
 
     sale = models.BooleanField(default=False)
     sale_price = models.DecimalField(default=0, max_digits=6, decimal_places=2)
+<<<<<<< HEAD
+=======
+    data_fim_oferta = models.DateTimeField(null=True, blank=True)
+>>>>>>> 80d6244b08f794ed920d481251e0bbee54a92d2c
     nota = models.FloatField(default=0)
 
 
@@ -37,6 +41,27 @@ class Produto(models.Model):
             return int(((self.preco - self.sale_price) / self.preco) * 100)
         return 0
     
+<<<<<<< HEAD
+=======
+  
+    @property
+    def tempo_restante(self):
+        if self.data_fim_oferta:
+            delta = self.data_fim_oferta - now()
+            if delta.total_seconds() > 0:
+                return {
+                    'dias': delta.days,
+                    'horas': delta.seconds // 3600,
+                    'minutos': (delta.seconds % 3600) // 60,
+                    'segundos': delta.seconds % 60,
+                }
+        return {'dias': 0, 'horas': 0, 'minutos': 0, 'segundos': 0}
+
+
+        
+        
+    
+>>>>>>> 80d6244b08f794ed920d481251e0bbee54a92d2c
     def estrelas_cheias(self):
         return int(self.nota)
 
