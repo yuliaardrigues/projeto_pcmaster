@@ -5,6 +5,7 @@ import datetime
 
 class Categoria(models.Model):
     nome = models.CharField(max_length=200)
+    imagem = models.ImageField(upload_to='categorias/', null=True, blank=True)
 
     def __str__(self):
         return self.nome
@@ -21,6 +22,7 @@ class Produto(models.Model):
 
     sale = models.BooleanField(default=False)
     sale_price = models.DecimalField(default=0, max_digits=6, decimal_places=2)
+    nota = models.FloatField(null=True, blank=True)
 
 
 

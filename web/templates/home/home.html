@@ -1,4 +1,8 @@
-{% extends 'base.html' %} {% block body %}
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body %}
+
 
 <!-- Barra superior -->
 <div
@@ -44,115 +48,66 @@
 
   <!-- Ícones de usuário -->
   <div class="flex items-center gap-4 text-xl">
-    <a href="#" title="Favoritos" class="hover:text-gray-300">💜</a>
-    <a href="#" title="Carrinho" class="hover:text-gray-300">🛒</a>
-    <a href="#" title="Perfil" class="hover:text-gray-300">👤</a>
+    <a href="#" title="Carrinho" class="hover:text-gray-300 "><i class="bi bi-cart"></i></a>
+    <a href="#" title="Favoritos" class="hover:text-gray-300 "><i class="bi bi-heart"></i></a>
+    <a href="{% url 'cadastro' %}" title="Perfil" class="hover:text-gray-300"><i class="bi bi-person"></i></a>
   </div>
 </header>
 
 <!-- Navegação inferior -->
 <nav class="bg-white text-gray-800 px-6 py-2 border-b">
-  <div
-    class="flex flex-col md:flex-row justify-between items-center gap-4 text-sm"
-  >
+  <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
+
     <div class="flex flex-wrap items-center gap-4">
       <div class="relative group">
-        <button
-          class="flex items-center gap-1 text-green-700 font-medium hover:text-green-800"
-        >
-          📂 Todas as categorias
-        </button>
+        <ul class="list-none">
+          <li>
+            <a class="flex items-center gap-1 text-green-600">Todas as categorias</a>
+          </li>
+        </ul>
 
-        <div
-          class="absolute left-0 bg-white shadow-lg mt-2 rounded z-50 flex border w-[280px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200"
-        >
+        <div class="absolute left-0 bg-white shadow-lg mt-2 rounded z-50 flex border w-[280px]
+              opacity-0 invisible group-hover:opacity-100 group-hover:visible
+              transition-all duration-200">
+
           <div class="w-full">
-            {% for categoria in categorias %}
-            <div class="relative group/categoria">
-              <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100">
-                {{ categoria.nome }}
-              </a>
+            <ul class="border-r divide-gray-200 list-none">
+              {% for categoria in categorias %}
+              <li class="relative group">
+                <a href="#" class="block px-4 py-2 hover:bg-gray-100">{{ categoria.nome }}</a>
 
-              <div
-                class="absolute left-full top-0 w-[900px] bg-white border shadow-lg p-6 rounded hidden group-hover/categoria:block z-50"
-                x-data="{ subcatAberta: null }"
-              >
-                <div class="grid grid-cols-3 gap-6">
-                  <div>
-                    {% for subcat in categoria.subcategoria_set.all %}
-                    <a
-                      href="#"
-                      @click.prevent="subcatAberta === {{ subcat.id }} ? subcatAberta = null : subcatAberta = {{ subcat.id }}"
-                      class="block text-sm text-gray-700 hover:text-green-600 mb-1"
-                    >
-                      {{ subcat.nome }}
-                    </a>
+                <div class="absolute top-0 left-full bg-white w-64 shadow-lg hidden group-hover:block z-10">
+                  <ul class="absolute overflow-auto space-y-2 text-sm text-gray-700 font-medium z-10 list-none">
+                    {% for subcategoria in subcategorias %}
+                    <li class="px-4 py-2 hover:bg-gray-100">
+                      <a href="#">{{ subcategoria.nome }}</a>
+                    </li>
                     {% endfor %}
-                  </div>
-
-                  <div>
-                    <h3 class="font-bold text-gray-800 mb-3">Produtos</h3>
-                    {% for subcat in categoria.subcategoria_set.all %}
-                    <div x-show="subcatAberta === {{ subcat.id }}" x-cloak>
-                      {% for produto in subcat.produto_set.all %}
-                      <div class="flex gap-3 mb-4">
-                        <img
-                          src="{{ produto.imagem.url }}"
-                          class="w-14 h-14 object-contain border"
-                          alt="{{ produto.nome }}"
-                        />
-                        <div>
-                          <p class="text-sm font-medium truncate">
-                            {{ produto.nome }}
-                          </p>
-                          <p class="text-green-600 font-bold text-sm">
-                            {{ produto.sale_price }}
-                          </p>
-                        </div>
-                      </div>
-                      {% endfor %}
-                    </div>
-                    {% endfor %}
-                  </div>
-
-                  <!-- Banner -->
-                  <div class="bg-yellow-100 p-4 rounded text-center">
-                    <p class="text-lg font-bold mb-2">20% Desconto</p>
-                    <p class="text-sm mb-2">Aproveite os preços exclusivos!</p>
-                    <a
-                      href="#"
-                      class="inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 text-sm font-semibold"
-                    >
-                      SHOP NOW →
-                    </a>
-                  </div>
+                  </ul>
                 </div>
-              </div>
-            </div>
-            {% endfor %}
+              </li>
+              {% endfor %}
+            </ul>
           </div>
         </div>
-
       </div>
 
-      <a href="#" class="flex items-center gap-1 hover:text-green-600"
-        >📍 Meu Lugar</a
-      >
-      <a href="#" class="flex items-center gap-1 hover:text-green-600"
-        >🛍 Compras</a
-      >
-      <a href="#" class="flex items-center gap-1 hover:text-green-600"
-        >📞 Atendimento ao cliente</a
-      >
-      <a href="#" class="flex items-center gap-1 hover:text-green-600"
-        >❓ Peça de ajuda</a
-      >
+      <!-- ✅ Aqui os ícones soltos são colocados dentro de UL -->
+      <ul class="list-none flex flex-wrap items-center gap-4">
+        <li><a href="#" class="flex items-center gap-1 text-green-600">📍 Meu Lugar</a></li>
+        <li><a href="#" class="flex items-center gap-1 text-green-600">🛍 Compras</a></li>
+        <li><a href="#" class="flex items-center gap-1 text-green-600">📞 Atendimento ao cliente</a></li>
+        <li><a href="#" class="flex items-center gap-1 text-green-600">❓ Peça de ajuda</a></li>
+      </ul>
     </div>
+
     <div class="font-semibold text-green-700 flex items-center gap-1">
       📞 <span>4002-8922</span>
     </div>
+
   </div>
 </nav>
+
 
 <!-- Banner -->
 <section class="bg-white text-center p-6">
@@ -212,18 +167,24 @@
 
 <!-- Categories -->
 <section class="bg-white p-6 mt-4">
-  <h2 class="text-xl font-bold mb-4">Browse Categories</h2>
+  <h2 class="text-xl font-bold mb-4">Outras Categories</h2>
   <div class="flex gap-4 overflow-x-auto">
+    
+   {% for categoria in categorias %}
     <div class="flex-shrink-0 bg-gray-100 p-4 rounded text-center">
-      <img
-        src="https://via.placeholder.com/50"
-        alt="Category"
+      {% if categoria.imagem and categoria.imagem.url %}
+    <img
+        src="{{ categoria.imagem.url }}"
+        alt="{{ categoria.nome }}"
         class="mx-auto"
-      />
-      <p>Headphones</p>
+    />
+{% endif %}
+      <p>{{ categoria.nome }}</p>
     </div>
-    <!-- Outras categorias aqui -->
+  {% endfor %}
+</div>
   </div>
+  
 </section>
 
 <!-- Offers -->
@@ -237,7 +198,6 @@
         Shop Now
       </button>
     </div>
-    <!-- Outras ofertas -->
   </div>
 </section>
 
