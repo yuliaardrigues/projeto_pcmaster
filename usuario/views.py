@@ -55,6 +55,14 @@ def login(request):
         messages.error(request, 'Usuário ou senha inválidos.')
         return redirect('login')
     
+def esqueci_senha(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        # Aqui você implementaria envio de e-mail ou lógica de recuperação
+        messages.success(request, 'Se o e-mail existir, as instruções foram enviadas.')
+        return redirect('login')  # Redireciona de volta ao login
+    return render(request, 'esqueci_senha.html')
+    
         
         
     

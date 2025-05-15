@@ -2,25 +2,81 @@
 
 {% block body %}
 
+<div class="flex items-center justify-center min-h-screen bg-gray-100">
+  <div class="w-full max-w-md bg-white shadow-lg rounded-md overflow-hidden">
 
+    <!-- Cabeçalho com ícone -->
+    <div class="px-6 py-4">
+      <div class="text-center mb-6">
+        <div class="w-14 h-14 mx-auto bg-green-600 text-white flex items-center justify-center rounded-full text-2xl font-bold">
+          PC
+        </div>
+        <h2 class="text-2xl font-bold text-gray-800 mt-4">Faça seu login</h2>
+        <p class="text-sm text-gray-500">Seja bem-vindo(a)!</p>
+      </div>
 
-    {% if messages %}
-    {% for message in messages %}
-    <div class="ml-3 py-4 alert alert-{{ message.tags }}">
-        {{ message }}
+    
+      <!-- Abas Sign In / Sign Up -->
+    <div class="flex border-b">
+      <button class="w-1/2 py-3 text-center font-semibold border-b-2 border-orange-500 text-gray-700">Login</button>
+      <a href="{% url 'cadastro' %}" class="w-1/2 py-3 text-center text-gray-500 hover:text-orange-500 font-semibold">Cadastro</a>
     </div>
+      <!-- Mensagens -->
+    <div class="p-6">
+
+      {% if messages %}
+        {% for message in messages %}
+          <div class="mb-4 p-2 text-white bg-red-500 rounded">
+            {{ message }}
+          </div>
     
     {% endfor %}
     {% endif %}
-    <form method="POST" action="{% url 'login' %}" >
-        {% csrf_token %}
-        <input type="text" placeholder="username" name = "username">
-        <br>
-        <br>
-        <input type="password" placeholder="password" name = "password">
-        <br>
-        <br>        
-        <input type="submit" value="Login">
-    </form>
+   
+
+  <div class="space-y-4">
+  <!-- Campo de email -->
+  <div>
+    <label for="email" class="block text-gray-700 font-medium mb-1">Email</label>
+    <input type="email" id="email" name="email"
+           class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500"
+           required>
+  </div>
+
+ <!-- Campo de senha com link acima à direita -->
+<div class="mb-4">
+  <div class="flex justify-between items-center mb-1">
+    <label for="senha" class="text-gray-700 font-medium">Senha</label>
+    <a href="{% url 'esqueci_senha' %}" class="text-sm text-orange-600 hover:underline">
+      Esqueceu sua senha?
+    </a>
+  </div>
+  <input type="password" id="senha" name="senha"
+         class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500"
+         required>
+</div>
+
+  <!-- Botão Login -->
+  <button type="submit"
+    class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded transition">
+    LOGIN →
+  </button>
+
+  <!-- Ou -->
+  <div class="flex items-center justify-center text-gray-500 text-sm">ou</div>
+
+  <!-- Login Google -->
+  <button class="w-full flex items-center justify-center border rounded py-2 hover:bg-gray-50">
+    <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="h-5 w-5 mr-2" alt="Google logo">
+    Login with Google
+  </button>
+
+  <!-- Login Apple -->
+  <button class="w-full flex items-center justify-center border rounded py-2 hover:bg-gray-50">
+    <img src="https://www.svgrepo.com/show/303128/apple-logo.svg" class="h-5 w-5 mr-2" alt="Apple logo">
+    Login with Apple
+  </button>
+</div>
+
 
 {% endblock %}

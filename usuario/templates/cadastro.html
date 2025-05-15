@@ -1,32 +1,90 @@
 {% extends 'base.html' %}
 
 {% block body %}
+<div class="flex items-center justify-center min-h-screen bg-gray-100">
+  <div class="w-full max-w-md bg-white shadow-lg rounded-md overflow-hidden">
 
+    <!-- Cabeçalho com ícone -->
+    <div class="px-6 py-4">
+      <div class="text-center mb-6">
+        <div class="w-14 h-14 mx-auto bg-green-600 text-white flex items-center justify-center rounded-full text-2xl font-bold">
+          PC
+        </div>
+        <h2 class="text-2xl font-bold text-gray-800 mt-4">Crie sua conta</h2>
+        <p class="text-sm text-gray-500">É rápido e fácil!</p>
+      </div>
 
-
-    {% if messages %}
-    {% for message in messages %}
-    <div class="ml-3 py-4 alert alert-{{ message.tags }}">
-        {{ message }}
-    </div>
     
-    {% endfor %}
-    {% endif %}
-    <form method="POST" action="{% url 'cadastro' %}" >
-        {% csrf_token %}
-        <input type="text" placeholder="name" name = "username">
-        <br>
-        <br>
-        <input type="text" placeholder="email" name = "email">
-        <br>
-        <br>
-        <input type="password" placeholder="password" name = "password">
-        <br>
-        <br>        
-        <input type="password" placeholder="confirm password" name = "confirm_password">
-        <br>
-        <br>
-        <input type="submit" value="Cadastrar">
-    </form>
+    <!-- Abas Sign In / Sign Up -->
+    <div class="flex border-b">
+      <a href="{% url 'login' %}" class="w-1/2 py-3 text-center text-gray-500 hover:text-orange-500 font-semibold">Login</a>
+      <button class="w-1/2 py-3 text-center font-semibold border-b-2 border-orange-500 text-gray-700">Cadastro</button>
+    </div>
 
+      <!-- Mensagens -->
+    <div class="p-6">
+      {% if messages %}
+        {% for message in messages %}
+          <div class="mb-4 p-2 text-white bg-red-500 rounded">
+              {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      <!-- Formulário -->
+      <form method="POST" action="{% url 'cadastro' %}" class="space-y-4">
+        {% csrf_token %}
+
+        <!-- Campo Nome de Usuário -->
+        <div>
+          <label class="block text-sm text-gray-600 mb-1">Nome de usuário</label>
+          <input type="text" name="username" placeholder="Seu nome de usuário"
+            class="w-full border rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500" />
+        </div>
+
+        <!-- Campo Email -->
+        <div>
+          <label class="block text-sm text-gray-600 mb-1">Email</label>
+          <input type="text" name="email" placeholder="Seu email"
+            class="w-full border rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500" />
+        </div>
+
+        <!-- Campo Senha -->
+        <div>
+          <label class="block text-sm text-gray-600 mb-1">Senha</label>
+          <input type="password" name="password" placeholder="Crie uma senha"
+            class="w-full border rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500" />
+        </div>
+
+        <!-- Confirmar Senha -->
+        <div>
+          <label class="block text-sm text-gray-600 mb-1">Confirmar senha</label>
+          <input type="password" name="confirm_password" placeholder="Confirme a senha"
+            class="w-full border rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500" />
+        </div>
+
+        <!-- Botão Login -->
+        <button type="submit"
+          class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded transition">
+          CADASTRAR →
+        </button>
+
+        <!-- Ou -->
+        <div class="flex items-center justify-center my-2 text-gray-500 text-sm">ou</div>
+
+        <!-- Login Google -->
+        <button class="w-full flex items-center justify-center border rounded py-2 hover:bg-gray-50">
+          <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="h-5 w-5 mr-2" alt="Google logo">
+          Login with Google
+        </button>
+
+        <!-- Login Apple -->
+        <button class="w-full flex items-center justify-center border rounded py-2 hover:bg-gray-50 mt-2">
+          <img src="https://www.svgrepo.com/show/303128/apple-logo.svg" class="h-5 w-5 mr-2" alt="Apple logo">
+          Login with Apple
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
 {% endblock %}
