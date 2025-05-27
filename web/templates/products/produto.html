@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="display: flex; gap: 20px; padding: 20px;">
+    <div style="flex: 1;">
+        <img src="{{ produto.imagem.url }}" alt="{{ produto.nome }}" style="width: 100%;">
+    </div>
+
+    <div style="flex: 2;">
+        <h2>{{ produto.nome }}</h2>
+        <p>{{ produto.descricao }}</p>
+        <p>
+            {% if produto.sale %}
+                <del>R$ {{ produto.preco }}</del>
+                <strong style="color: green;">R$ {{ produto.sale_price }}</strong>
+                <span style="color: red;">-{{ produto.desconto_percentual }}%</span>
+            {% else %}
+                <strong>R$ {{ produto.preco }}</strong>
+            {% endif %}
+        </p>
+        <p>Nota: {{ produto.nota }} estrelas</p>
+
+        <form method="post" action="{% url 'adicionar_ao_carrinho' produto.id %}">
+            {% csrf_token %}
+            <button type="submit">Adicionar ao carrinho 🛒</button>
+        </form>
+        <form method="post" action="{% url 'adicionar_aos_favoritos' produto.id %}">
+            {% csrf_token %}
+            <button type="submit">Favoritar ❤️</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

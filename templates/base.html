@@ -14,23 +14,59 @@
   {% block head %}{% endblock %}
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
+<!-- Barra superior -->
+<div class="bg-green-700 text-white text-sm px-4 py-1 flex justify-between items-center">
+  <span class="text-base">Bem-vindo à PC MASTER!</span>
 
-  <!-- Barra superior -->
-  <div
-    class="bg-green-700 text-white text-sm px-4 py-1 flex justify-between items-center"
-  >
-    <span>Bem-vindo à PC MASTER!</span>
-    <div class="flex gap-2 items-center text-xs">
+  <div class="flex items-center gap-6 text-base">
+    <!-- Redes sociais -->
+    <div class="flex items-center gap-2 text-white">
       <span class="hover:underline cursor-pointer">Siga-nos</span>
-      <span class="mx-1">|</span>
-      <span class="hover:underline cursor-pointer">PT</span>
-      <span class="mx-1">|</span>
-      <span class="hover:underline cursor-pointer">BRL</span>
+      <i class="fab fa-twitter hover:text-gray-300 cursor-pointer"></i>
+      <i class="fab fa-facebook-f hover:text-gray-300 cursor-pointer"></i>
+      <i class="fab fa-pinterest-p hover:text-gray-300 cursor-pointer"></i>
+      <i class="fab fa-youtube hover:text-gray-300 cursor-pointer"></i>
+      <i class="fab fa-instagram hover:text-gray-300 cursor-pointer"></i>
+    </div>
+
+    <!-- Seletores de idioma e moeda -->
+    <div class="flex items-center gap-4 relative" x-data="{ openLang: false, openCurr: false }">
+      <!-- Idioma -->
+      <div class="relative">
+        <button @click="openLang = !openLang; openCurr = false"
+                class="flex items-center gap-1 hover:underline cursor-pointer">
+          <span x-text="localStorage.getItem('lang') || 'PT'">PT</span>
+          <i class="fas fa-chevron-down text-sm"></i>
+        </button>
+        <ul x-show="openLang" @click.outside="openLang = false"
+            class="absolute bg-white text-black mt-1 rounded shadow z-50 w-20">
+          <li><button @click="localStorage.setItem('lang', 'PT'); openLang = false; location.reload()" class="w-full text-left px-3 py-1 hover:bg-gray-100">PT</button></li>
+          <li><button @click="localStorage.setItem('lang', 'EN'); openLang = false; location.reload()" class="w-full text-left px-3 py-1 hover:bg-gray-100">EN</button></li>
+        </ul>
+      </div>
+
+      <!-- Moeda -->
+      <div class="relative">
+        <button @click="openCurr = !openCurr; openLang = false"
+                class="flex items-center gap-1 hover:underline cursor-pointer">
+          <span x-text="localStorage.getItem('currency') || 'BRL'">BRL</span>
+          <i class="fas fa-chevron-down text-sm"></i>
+        </button>
+        <ul x-show="openCurr" @click.outside="openCurr = false"
+            class="absolute bg-white text-black mt-1 rounded shadow z-50 w-20">
+          <li><button @click="localStorage.setItem('currency', 'BRL'); openCurr = false; location.reload()" class="w-full text-left px-3 py-1 hover:bg-gray-100">BRL</button></li>
+          <li><button @click="localStorage.setItem('currency', 'USD'); openCurr = false; location.reload()" class="w-full text-left px-3 py-1 hover:bg-gray-100">USD</button></li>
+        </ul>
+      </div>
     </div>
   </div>
+</div>
+
 
   <!-- Cabeçalho principal -->
   <header
+
+  
     class="bg-green-600 text-white px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-4"
   >
     <!-- Logo -->
@@ -59,61 +95,86 @@
 
      <!-- Ícones de usuário -->
   <div class="flex items-center gap-4 text-xl">
-    <a href="#" title="Carrinho" class="hover:text-gray-300 "><i class="bi bi-cart"></i></a>
-    <a href="#" title="Favoritos" class="hover:text-gray-300 "><i class="bi bi-heart"></i></a>
-    <a href="{% url 'cadastro' %}" title="Perfil" class="hover:text-gray-300"><i class="bi bi-person"></i></a>
+    <span class="text-sm text-white">
+  <a href="{% url 'carrinho' %}" title="Carrinho" class="hover:text-gray-300">
+    <i class="bi bi-cart"></i>
+  </a>
+  {{ request.session.carrinho|length|default:0 }}
+</span>
+<span class="text-sm text-white ml-4"> <a href="#" title="Favoritos" class="hover:text-gray-300 "><i class="bi bi-heart"></i></a> {{ request.session.favoritos|length|default:0 }}</span>
+<a href="{% url 'cadastro' %}" title="Perfil" class="hover:text-gray-300"><i class="bi bi-person"></i></a>
   </div>
 </header>
 
   <!-- Navegação inferior -->
-  <nav class="bg-white text-gray-800 px-6 py-2 border-b">
-    <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
-      <div class="flex flex-wrap items-center gap-4">
-        <div class="relative group">
-          <ul class="list-none">
-            <li>
-              <a class="flex items-center gap-1 text-green-600">Todas as categorias</a>
-            </li>
-          </ul>
+<nav class="bg-white text-gray-800 px-6 py-2 border-b">
+  <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
+    
+    <div class="flex items-center gap-4">
+      <div class="relative group">
 
-          <div class="absolute left-0 bg-white shadow-lg mt-2 rounded z-50 flex border w-[280px]
-                opacity-0 invisible group-hover:opacity-100 group-hover:visible
-                transition-all duration-200">
-            <div class="w-full">
-              <ul class="border-r divide-gray-200 list-none">
-                {% for categoria in categorias %}
-                <li class="relative group">
-                  <a href="#" class="block px-4 py-2 hover:bg-gray-100">{{ categoria.nome }}</a>
-                  <div class="absolute top-0 left-full bg-white w-64 shadow-lg hidden group-hover:block z-10">
-                    <ul class="absolute overflow-auto space-y-2 text-sm text-gray-700 font-medium z-10 list-none">
-                      {% for subcategoria in subcategorias %}
-                      <li class="px-4 py-2 hover:bg-gray-100">
-                        <a href="#">{{ subcategoria.nome }}</a>
-                      </li>
-                      {% endfor %}
-                    </ul>
-                  </div>
-                </li>
-                {% endfor %}
-              </ul>
-            </div>
-          </div>
+
+        
+        <!-- Botão estilizado -->
+        <div class="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded cursor-pointer hover:bg-gray-200 transition">
+          <span class="text-green-600 font-semibold">Todas as categorias</span>
+          <span class="text-green-600 text-lg">▼</span>
+          
         </div>
 
-        <!-- Links adicionais -->
-        <ul class="list-none flex flex-wrap items-center gap-4">
-          <li><a href="#" class="flex items-center gap-1 text-green-600">📍 Meu Lugar</a></li>
-          <li><a href="#" class="flex items-center gap-1 text-green-600">🛍 Compras</a></li>
-          <li><a href="#" class="flex items-center gap-1 text-green-600">📞 Atendimento ao cliente</a></li>
-          <li><a href="#" class="flex items-center gap-1 text-green-600">❓ Peça de ajuda</a></li>
-        </ul>
-      </div>
+        
 
-      <div class="font-semibold text-green-700 flex items-center gap-1">
-        📞 <span>4002-8922</span>
+        <!-- Dropdown de categorias -->
+        <div class="absolute left-0 bg-white shadow-lg mt-2 rounded z-50 flex border w-[280px]
+              opacity-0 invisible group-hover:opacity-100 group-hover:visible
+              transition-all duration-200">
+          <div class="w-full">
+            <ul class="border-r divide-gray-200 list-none">
+              {% for categoria in categorias %}
+              <li class="relative group">
+                <a href="#" class="block px-4 py-2 hover:bg-gray-100">{{ categoria.nome }}</a>
+
+                <div class="absolute top-0 left-full bg-white w-64 shadow-lg hidden group-hover:block z-10">
+                  <ul class="absolute overflow-auto space-y-2 text-sm text-gray-700 font-medium z-10 list-none">
+                    {% for subcategoria in subcategorias %}
+                    <li class="px-4 py-2 hover:bg-gray-100">
+                      <a href="#">{{ subcategoria.nome }}</a>
+                    </li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
-  </nav>
+
+    <a href="#" class="flex items-center gap-1 text-gray-700 hover:text-green-600 transition">
+  <!-- Ícone localização -->
+  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c1.657 0 3-1.343 3-3S13.657 5 12 5s-3 1.343-3 3 1.343 3 3 3z" />
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.341A8 8 0 104.57 15.34L12 21l7.428-5.659z" />
+  </svg>
+  Rastrear Pedido
+</a>
+
+<a href="#" class="flex items-center gap-1 text-gray-700 hover:text-green-600 transition">
+  <!-- Ícone fone -->
+  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636a9 9 0 00-12.728 0M3 10v2a9 9 0 009 9h0a9 9 0 009-9v-2M8 14h.01M16 14h.01" />
+  </svg>
+  Atendimento ao Cliente
+</a>
+
+
+    <div class="font-semibold text-green-700 flex items-center gap-1">
+      📞 <span>4002-8922</span>
+    </div>
+    
+  </div>
+</nav>
 
   <!-- Conteúdo da página -->
   <main class="flex-grow px-6">
