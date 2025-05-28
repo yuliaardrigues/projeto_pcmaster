@@ -3,47 +3,37 @@
 
 {% block content %}
 <div class="max-w-6xl mx-auto px-4 py-8">
-    <!-- Caminho de navegação (breadcrumb) -->
+    <!-- Breadcrumb -->
     <div class="flex items-center text-sm text-gray-500 mb-6">
         <a href="{% url 'home' %}" class="hover:text-green-600">Home</a>
         <span class="mx-2">/</span>
-        <a href="{% url 'produto' %}" class="hover:text-green-600">Produtos</a>
+        <a href="{% url 'todos_os_produtos' %}" class="hover:text-green-600">Produtos</a>
         <span class="mx-2">/</span>
         <span class="text-gray-800">{{ produto.nome|truncatechars:30 }}</span>
     </div>
 
     <div class="flex flex-col lg:flex-row gap-8">
-        <!-- Galeria de imagens -->
+        <!-- Galeria -->
         <div class="lg:w-1/2">
             <div class="bg-gray-50 rounded-lg p-4 mb-4">
-                <img src="{{ produto.imagem.url }}" alt="{{ produto.nome }}" 
-                     class="w-full h-80 object-contain" id="mainProductImage">
+                <img src="{{ produto.imagem.url }}" alt="{{ produto.nome }}" class="w-full h-80 object-contain" id="mainProductImage">
             </div>
-            
-            <!-- Miniaturas (pode adicionar mais imagens posteriormente) -->
             <div class="flex gap-2">
                 <div class="w-16 h-16 border rounded cursor-pointer hover:border-green-500 transition"
                      onclick="document.getElementById('mainProductImage').src = '{{ produto.imagem.url }}'">
                     <img src="{{ produto.imagem.url }}" class="w-full h-full object-contain" alt="Thumbnail">
                 </div>
-                <!-- Adicione mais miniaturas aqui quando tiver imagens adicionais -->
             </div>
         </div>
 
-        <!-- Detalhes do produto -->
+        <!-- Detalhes -->
         <div class="lg:w-1/2">
             <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">{{ produto.nome }}</h1>
-            
+
             <!-- Avaliação -->
             <div class="flex items-center mb-4">
                 <div class="flex text-yellow-400 mr-2">
-                    {% for i in "12345" %}
-                        {% if forloop.counter <= produto.nota %}
-                            <span>★</span>
-                        {% else %}
-                            <span>☆</span>
-                        {% endif %}
-                    {% endfor %}
+                    <span>★</span><span>☆</span>
                 </div>
                 <span class="text-sm text-gray-600">(32 avaliações)</span>
             </div>
@@ -66,30 +56,16 @@
             <!-- Descrição -->
             <div class="mb-6">
                 <h3 class="text-lg font-semibold mb-2">Descrição</h3>
-                <p class="text-gray-600">{{ produto.descricao|default:"Descrição detalhada do produto." }}</p>
+                <p class="text-gray-600">{{ produto.descricao }}</p>
             </div>
 
-            <!-- Opções (cores, memória, etc) -->
-            <div class="space-y-4 mb-8">
-                {% if produto.categoria.nome == 'Memória RAM' or produto.categoria.nome == 'SSD' %}
-                <div>
-                    <h4 class="font-medium mb-2">Capacidade</h4>
-                    <div class="flex gap-2">
-                        <button class="px-4 py-2 border rounded hover:bg-green-50 hover:border-green-500 transition">8GB</button>
-                        <button class="px-4 py-2 border rounded hover:bg-green-50 hover:border-green-500 transition">16GB</button>
-                        <button class="px-4 py-2 border rounded hover:bg-green-50 hover:border-green-500 transition">32GB</button>
-                    </div>
-                </div>
-                {% endif %}
-
-                <!-- Quantidade -->
-                <div>
-                    <h4 class="font-medium mb-2">Quantidade</h4>
-                    <div class="flex items-center">
-                        <button class="px-3 py-1 border rounded-l hover:bg-gray-100" onclick="decrementQuantity()">-</button>
-                        <input type="text" value="1" class="w-12 text-center border-t border-b py-1" id="quantityInput">
-                        <button class="px-3 py-1 border rounded-r hover:bg-gray-100" onclick="incrementQuantity()">+</button>
-                    </div>
+            <!-- Quantidade -->
+            <div class="mb-6">
+                <h4 class="font-medium mb-2">Quantidade</h4>
+                <div class="flex items-center">
+                    <button class="px-3 py-1 border rounded-l hover:bg-gray-100" onclick="decrementQuantity()">-</button>
+                    <input type="text" value="1" class="w-12 text-center border-t border-b py-1" id="quantityInput">
+                    <button class="px-3 py-1 border rounded-r hover:bg-gray-100" onclick="incrementQuantity()">+</button>
                 </div>
             </div>
 
@@ -98,22 +74,20 @@
                 <form method="post" action="{% url 'adicionar_ao_carrinho' produto.id %}" class="flex-1">
                     {% csrf_token %}
                     <input type="hidden" name="quantity" id="formQuantity" value="1">
-                    <button type="submit" 
-                            class="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-lg font-medium transition flex items-center justify-center gap-2">
+                    <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-lg font-medium transition flex items-center justify-center gap-2">
                         <i class="fas fa-shopping-cart"></i> Adicionar ao Carrinho
                     </button>
                 </form>
-                
+
                 <form method="post" action="{% url 'adicionar_aos_favoritos' produto.id %}" class="flex-1">
                     {% csrf_token %}
-                    <button type="submit" 
-                            class="w-full border border-green-600 text-green-600 hover:bg-green-50 py-3 px-6 rounded-lg font-medium transition flex items-center justify-center gap-2">
+                    <button type="submit" class="w-full border border-green-600 text-green-600 hover:bg-green-50 py-3 px-6 rounded-lg font-medium transition flex items-center justify-center gap-2">
                         <i class="far fa-heart"></i> Favoritos
                     </button>
                 </form>
             </div>
 
-            <!-- Entrega e garantia -->
+            <!-- Entrega e Garantia -->
             <div class="mt-8 pt-6 border-t border-gray-200">
                 <div class="grid grid-cols-2 gap-4">
                     <div class="flex items-center gap-3">
@@ -135,32 +109,33 @@
         </div>
     </div>
 
-    <!-- Produtos relacionados -->
+    <!-- Produtos Relacionados -->
     <div class="mt-16">
         <h3 class="text-xl font-bold mb-6">Produtos Relacionados</h3>
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {% for rel in produtos_relacionados %}
-                <a href="{% url 'detalhe_produto' rel.id %}" class="group">
-                    <div class="border rounded-lg p-3 hover:shadow-md transition">
-                        <div class="relative h-40 mb-3">
-                            <img src="{{ rel.imagem.url }}" alt="{{ rel.nome }}" class="w-full h-full object-contain">
-                        </div>
-                        <h4 class="font-medium text-sm group-hover:text-green-600">{{ rel.nome|truncatechars:40 }}</h4>
-                        <p class="text-green-600 font-bold mt-1">R$ {{ rel.sale_price }}</p>
+            <a href="{% url 'produto' rel.id %}">
+                <div class="border rounded-lg p-3 hover:shadow-md transition">
+                    <div class="relative h-40 mb-3">
+                        <img src="{{ rel.imagem.url }}" alt="{{ rel.nome }}" class="w-full h-full object-contain">
                     </div>
-                </a>
+                    <h4 class="font-medium text-sm group-hover:text-green-600">{{ rel.nome|truncatechars:40 }}</h4>
+                    <p class="text-green-600 font-bold mt-1">R$ {{ rel.sale_price|default:rel.preco }}</p>
+                </div>
+            </a>
             {% endfor %}
         </div>
     </div>
 </div>
 
+<!-- Script de quantidade -->
 <script>
     function incrementQuantity() {
         const input = document.getElementById('quantityInput');
         input.value = parseInt(input.value) + 1;
         document.getElementById('formQuantity').value = input.value;
     }
-    
+
     function decrementQuantity() {
         const input = document.getElementById('quantityInput');
         if (parseInt(input.value) > 1) {

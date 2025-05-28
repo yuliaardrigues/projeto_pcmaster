@@ -1,34 +1,54 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Produto, Categoria, Subcategoria
+from django.http import HttpResponse
+
 
 def home(request):
     produto = Produto.objects.all()
     categorias = Categoria.objects.all()
     subcategorias = Subcategoria.objects.all()
-    return render(request, 'home/home.html', {'produtos':produto, 'categorias': categorias, 'subcategorias': subcategorias}) 
+    return render(request, 'home/home.html', {
+        'produtos': produto,
+        'categorias': categorias,
+        'subcategorias': subcategorias
+    })
 
-def produto(request):
-    produto = Produto.objects.all()
-    return render(request, 'products/produto.html', {'produtos':produto})
+
+def produto(request, produto_id):
+    produto = get_object_or_404(Produto, id=produto_id)
+    
+    # Produtos relacionados (mesma categoria, exceto o próprio)
+    produtos_relacionados = Produto.objects.filter(categoria=produto.categoria).exclude(id=produto.id)[:4]
+    
+    return render(request, 'products/produto.html', {
+        'produto': produto,
+        'produtos_relacionados': produtos_relacionados
+    })
+
+
+def todos_os_produtos(request):
+    produtos = Produto.objects.all()
+    categorias = Categoria.objects.all()
+    return render(request, 'products/todos.html', {
+        'produtos': produtos,
+        'categorias': categorias
+    })
+
 
 def adicionar_ao_carrinho(request, produto_id):
     carrinho = request.session.get('carrinho', [])
     if produto_id not in carrinho:
         carrinho.append(produto_id)
         request.session['carrinho'] = carrinho
-    return redirect('home')  
+    return redirect('home')
+
 
 def adicionar_aos_favoritos(request, produto_id):
     favoritos = request.session.get('favoritos', [])
     if produto_id not in favoritos:
         favoritos.append(produto_id)
         request.session['favoritos'] = favoritos
-    return redirect('home') 
-
-def detalhe_produto(request, produto_id):
-    produto = Produto.objects.get(id=produto_id)
-    return render(request, 'products/produto_detalhe.html', {'produto': produto})
-
+    return redirect('home')
 
 
 def produtos_por_categoria(request, categoria_id):

@@ -52,66 +52,59 @@
 </section>
 
 <!-- Featured Products -->
-<!-- Featured Products -->
+<!-- Produtos em destaque -->
 <section class="border rounded p-4">
   <div class="flex justify-between items-center mb-6">
-    {% if produtos %}
-    {% with restante=produtos.0.tempo_restante %}
     <h2 class="text-lg font-semibold">Melhores ofertas</h2>
-    {% endwith %}
-    {% endif %}
-    <a href="{% url 'produto' %}" class="text-sm text-blue-600 hover:underline">
-      Todos os produtos →
-    </a>
+    <a href="{% url 'todos_os_produtos' %}" class="text-sm text-blue-600 hover:underline">Todos os produtos →</a>
   </div>
 
-  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+  <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
     {% for produto in produtos %}
-    <a href="{% url 'detalhe_produto' produto.id %}" class="block h-full">
-      <div class="relative group border rounded-lg p-4 bg-white shadow hover:shadow-md transition h-full flex flex-col justify-between text-sm">
-
-        <!-- Imagem -->
-        <div class="relative">
-          <img src="{{ produto.imagem.url }}" alt="{{ produto.nome }}" class="w-full h-36 object-contain rounded-md">
-
-          <!-- Botões flutuantes -->
-          <div class="absolute inset-0 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition duration-300">
-            <a href="{% url 'adicionar_aos_favoritos' produto.id %}" class="bg-white p-2 rounded-full shadow hover:scale-110 transition" onclick="event.stopPropagation();">
-              <i class="fas fa-heart text-green-600 text-sm"></i>
-            </a>
-            <a href="{% url 'adicionar_ao_carrinho' produto.id %}" class="bg-white p-2 rounded-full shadow hover:scale-110 transition" onclick="event.stopPropagation();">
-              <i class="fas fa-shopping-cart text-black text-sm"></i>
-            </a>
-            <a href="{% url 'detalhe_produto' produto.id %}" class="bg-white p-2 rounded-full shadow hover:scale-110 transition" onclick="event.stopPropagation();">
-              <i class="fas fa-eye text-gray-800 text-sm"></i>
-            </a>
-          </div>
-
-          {% if produto.desconto_percentual > 0 %}
-          <div class="absolute top-2 left-2 bg-yellow-400 text-white text-[10px] px-1.5 py-0.5 rounded">
-            {{ produto.desconto_percentual }}% OFF
-          </div>
-          {% endif %}
-
-          {% if produto.sale %}
-          <div class="absolute top-2 right-2 bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded">
-            HOT
-          </div>
-          {% endif %}
-        </div>
-
-        <!-- Conteúdo -->
-        <div class="mt-2 space-y-1">
-          <div class="text-yellow-500 text-xs">★★★★★ ({{ produto.avaliacoes|default:'52,677' }})</div>
-          <div class="font-semibold text-gray-800 leading-snug text-sm">{{ produto.nome|truncatechars:60 }}</div>
-          {% if produto.desconto_percentual > 0 %}
-            <strike class="text-gray-400 text-xs">R${{ produto.preco }}</strike>
-          {% endif %}
-          <div class="text-blue-700 font-bold text-sm">R${{ produto.sale_price }}</div>
-        </div>
-
+    <div class="border rounded p-6 relative group">
+      {% if produto.desconto_percentual > 0 %}
+      <div class="absolute top-4 left-4 bg-red-500 text-white text-xs px-2 py-1 rounded">
+        {{ produto.desconto_percentual }}% OFF
       </div>
-    </a>
+      {% endif %}
+
+      {% if produto.sale %}
+      <div class="absolute top-2 right-2 bg-yellow-400 text-white text-xs px-2 py-1 rounded">
+        HOT
+      </div>
+      {% endif %}
+
+      <img
+        src="{{ produto.imagem.url }}"
+        alt="{{ produto.nome }}"
+        class="w-full h-32 object-contain mx-auto"
+      />
+
+      <!-- Botões flutuantes -->
+      <div class="absolute inset-0 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition duration-300">
+        <a href="{% url 'adicionar_aos_favoritos' produto.id %}" class="bg-white p-2 rounded-full shadow hover:scale-110 transition" aria-label="Favoritar">
+          <i class="fas fa-heart text-green-600 text-sm"></i>
+        </a>
+        <a href="{% url 'adicionar_ao_carrinho' produto.id %}" class="bg-white p-2 rounded-full shadow hover:scale-110 transition" aria-label="Adicionar ao carrinho">
+          <i class="fas fa-shopping-cart text-black text-sm"></i>
+        </a>
+        <a href="{% url 'produto' produto.id %}" class="bg-white p-2 rounded-full shadow hover:scale-110 transition" aria-label="Ver detalhes do produto">
+          <i class="fas fa-eye text-gray-800 text-sm"></i>
+        </a>
+      </div>
+
+      <div class="mt-2 text-sm font-semibold text-gray-800">
+        {{ produto.nome }}
+      </div>
+      <div class="text-yellow-500 text-xs mt-1">★★★★★ (32.677)</div>
+
+      {% if produto.sale_price %}
+        <strike class="text-gray-400">R${{ produto.preco }}</strike>
+        <div class="text-green-600 font-bold">R${{ produto.sale_price }}</div>
+      {% else %}
+        <div class="text-gray-800 font-bold">R${{ produto.preco }}</div>
+      {% endif %}
+    </div>
     {% endfor %}
   </div>
 </section>
