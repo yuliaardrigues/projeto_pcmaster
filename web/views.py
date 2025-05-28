@@ -56,3 +56,4 @@ def produtos_por_categoria(request, categoria_id):
         'categorias': categorias,
         'categoria_selecionada': categoria
     })
+

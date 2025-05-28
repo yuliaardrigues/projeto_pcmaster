@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 from django.contrib.messages import constants
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 def cadastro(request):
@@ -51,7 +53,7 @@ def login(request):
 
         if user:
             auth_login(request, user)
-            return redirect('home')
+            return redirect('/home/')
         messages.error(request, 'Usuário ou senha inválidos.')
         return redirect('login')
     
