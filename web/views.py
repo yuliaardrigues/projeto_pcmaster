@@ -14,15 +14,11 @@ def home(request):
     })
 
 
-def produto(request, produto_id):
-    produto = get_object_or_404(Produto, id=produto_id)
-    
-    # Produtos relacionados (mesma categoria, exceto o próprio)
-    produtos_relacionados = Produto.objects.filter(categoria=produto.categoria).exclude(id=produto.id)[:4]
+def produto(request, pk):
+    produto = get_object_or_404(Produto, id=pk)
     
     return render(request, 'products/produto.html', {
-        'produto': produto,
-        'produtos_relacionados': produtos_relacionados
+        'produto': produto
     })
 
 

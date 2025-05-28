@@ -3,132 +3,77 @@
 
 {% block content %}
 <div class="max-w-6xl mx-auto px-4 py-8">
+
     <!-- Breadcrumb -->
-    <div class="flex items-center text-sm text-gray-500 mb-6">
+    <div class="text-sm text-gray-500 mb-6">
         <a href="{% url 'home' %}" class="hover:text-green-600">Home</a>
         <span class="mx-2">/</span>
-        <a href="{% url 'todos_os_produtos' %}" class="hover:text-green-600">Produtos</a>
-        <span class="mx-2">/</span>
-        <span class="text-gray-800">{{ produto.nome|truncatechars:30 }}</span>
+        <span class="text-gray-800">{{ produto.nome }}</span>
     </div>
 
     <div class="flex flex-col lg:flex-row gap-8">
-        <!-- Galeria -->
+        <!-- Imagem principal -->
         <div class="lg:w-1/2">
-            <div class="bg-gray-50 rounded-lg p-4 mb-4">
-                <img src="{{ produto.imagem.url }}" alt="{{ produto.nome }}" class="w-full h-80 object-contain" id="mainProductImage">
+            <div class="border p-4 rounded-lg mb-4">
+                <img id="mainProductImage" src="{{ produto.imagem.url }}" alt="{{ produto.nome }}" class="w-full h-80 object-contain">
             </div>
-            <div class="flex gap-2">
-                <div class="w-16 h-16 border rounded cursor-pointer hover:border-green-500 transition"
-                     onclick="document.getElementById('mainProductImage').src = '{{ produto.imagem.url }}'">
-                    <img src="{{ produto.imagem.url }}" class="w-full h-full object-contain" alt="Thumbnail">
-                </div>
+
+            <!-- Miniaturas -->
+            <div class="flex space-x-2">
+                {% for i in produto.galeria.all %}
+                    <div class="w-16 h-16 border rounded cursor-pointer hover:border-green-500 transition"
+                         onclick="document.getElementById('mainProductImage').src = '{{ i.imagem.url }}'">
+                        <img src="{{ i.imagem.url }}" class="w-full h-full object-contain" alt="Miniatura">
+                    </div>
+                {% empty %}
+                    <div class="w-16 h-16 border rounded">
+                        <img src="{{ produto.imagem.url }}" class="w-full h-full object-contain" alt="Miniatura">
+                    </div>
+                {% endfor %}
             </div>
         </div>
 
         <!-- Detalhes -->
         <div class="lg:w-1/2">
-            <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">{{ produto.nome }}</h1>
+            <h1 class="text-3xl font-bold text-gray-800 mb-4">{{ produto.nome }}</h1>
 
-            <!-- Avaliação -->
-            <div class="flex items-center mb-4">
-                <div class="flex text-yellow-400 mr-2">
-                    <span>★</span><span>☆</span>
-                </div>
-                <span class="text-sm text-gray-600">(32 avaliações)</span>
+            <div class="text-2xl text-green-600 font-semibold mb-4">
+                R$ {{ produto.preco }}
             </div>
 
-            <!-- Preço -->
-            <div class="mb-6">
-                {% if produto.sale %}
-                    <div class="flex items-center gap-3">
-                        <span class="text-3xl font-bold text-green-600">R$ {{ produto.sale_price }}</span>
-                        <span class="text-lg text-gray-500 line-through">R$ {{ produto.preco }}</span>
-                        <span class="bg-red-100 text-red-600 px-2 py-1 rounded text-sm font-medium">
-                            -{{ produto.desconto_percentual }}% OFF
-                        </span>
-                    </div>
-                {% else %}
-                    <span class="text-3xl font-bold text-gray-800">R$ {{ produto.preco }}</span>
-                {% endif %}
-            </div>
-
-            <!-- Descrição -->
-            <div class="mb-6">
-                <h3 class="text-lg font-semibold mb-2">Descrição</h3>
-                <p class="text-gray-600">{{ produto.descricao }}</p>
-            </div>
+            <p class="text-gray-600 mb-6">{{ produto.descricao }}</p>
 
             <!-- Quantidade -->
-            <div class="mb-6">
-                <h4 class="font-medium mb-2">Quantidade</h4>
-                <div class="flex items-center">
-                    <button class="px-3 py-1 border rounded-l hover:bg-gray-100" onclick="decrementQuantity()">-</button>
-                    <input type="text" value="1" class="w-12 text-center border-t border-b py-1" id="quantityInput">
-                    <button class="px-3 py-1 border rounded-r hover:bg-gray-100" onclick="incrementQuantity()">+</button>
+            <div class="mb-4">
+                <label class="block font-medium mb-1">Quantidade:</label>
+                <div class="flex">
+                    <button class="px-3 py-1 border rounded-l" onclick="decrementQuantity()">-</button>
+                    <input type="text" id="quantityInput" value="1" class="w-12 text-center border-t border-b py-1">
+                    <button class="px-3 py-1 border rounded-r" onclick="incrementQuantity()">+</button>
                 </div>
             </div>
 
-            <!-- Ações -->
-            <div class="flex flex-col sm:flex-row gap-3">
-                <form method="post" action="{% url 'adicionar_ao_carrinho' produto.id %}" class="flex-1">
+            <!-- Botões -->
+            <div class="flex flex-col sm:flex-row gap-3 mt-6">
+                <form method="post" action="{% url 'adicionar_ao_carrinho' produto.pk %}" class="w-full">
                     {% csrf_token %}
                     <input type="hidden" name="quantity" id="formQuantity" value="1">
-                    <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-lg font-medium transition flex items-center justify-center gap-2">
-                        <i class="fas fa-shopping-cart"></i> Adicionar ao Carrinho
+                    <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-lg font-medium">
+                        Adicionar ao Carrinho
                     </button>
                 </form>
 
-                <form method="post" action="{% url 'adicionar_aos_favoritos' produto.id %}" class="flex-1">
+                <form method="post" action="{% url 'adicionar_aos_favoritos' produto.pk %}" class="w-full">
                     {% csrf_token %}
-                    <button type="submit" class="w-full border border-green-600 text-green-600 hover:bg-green-50 py-3 px-6 rounded-lg font-medium transition flex items-center justify-center gap-2">
-                        <i class="far fa-heart"></i> Favoritos
+                    <button type="submit" class="w-full border border-green-600 text-green-600 hover:bg-green-50 py-3 px-6 rounded-lg font-medium">
+                        Favoritar
                     </button>
                 </form>
             </div>
-
-            <!-- Entrega e Garantia -->
-            <div class="mt-8 pt-6 border-t border-gray-200">
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="flex items-center gap-3">
-                        <i class="fas fa-truck text-green-600"></i>
-                        <div>
-                            <p class="font-medium">Frete Grátis</p>
-                            <p class="text-xs text-gray-500">Para todo Brasil</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <i class="fas fa-shield-alt text-green-600"></i>
-                        <div>
-                            <p class="font-medium">Garantia</p>
-                            <p class="text-xs text-gray-500">12 meses</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Produtos Relacionados -->
-    <div class="mt-16">
-        <h3 class="text-xl font-bold mb-6">Produtos Relacionados</h3>
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {% for rel in produtos_relacionados %}
-            <a href="{% url 'produto' rel.id %}">
-                <div class="border rounded-lg p-3 hover:shadow-md transition">
-                    <div class="relative h-40 mb-3">
-                        <img src="{{ rel.imagem.url }}" alt="{{ rel.nome }}" class="w-full h-full object-contain">
-                    </div>
-                    <h4 class="font-medium text-sm group-hover:text-green-600">{{ rel.nome|truncatechars:40 }}</h4>
-                    <p class="text-green-600 font-bold mt-1">R$ {{ rel.sale_price|default:rel.preco }}</p>
-                </div>
-            </a>
-            {% endfor %}
         </div>
     </div>
 </div>
 
-<!-- Script de quantidade -->
 <script>
     function incrementQuantity() {
         const input = document.getElementById('quantityInput');

@@ -6,11 +6,9 @@ urlpatterns = [
     # Página inicial
     path('home/', views.home, name='home'),
 
-    # Página de listagem de todos os produtos (usada no breadcrumb)
-    path('produtos/', views.todos_os_produtos, name='todos_os_produtos'),
 
     # Página de detalhes de um produto
-    path('produto/<int:produto_id>/', views.produto, name='produto'),
+    path('produto/<int:pk>/', views.produto, name='produto'),
 
     # Adicionar produto ao carrinho
     path('carrinho/adicionar/<int:produto_id>/', views.adicionar_ao_carrinho, name='adicionar_ao_carrinho'),

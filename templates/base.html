@@ -8,18 +8,16 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
   {% block head %}{% endblock %}
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
+
 <!-- Barra superior -->
 <div class="bg-green-700 text-white text-sm px-4 py-1 flex justify-between items-center">
   <span class="text-base">Bem-vindo à PC MASTER!</span>
-
   <div class="flex items-center gap-6 text-base">
-    <!-- Redes sociais -->
     <div class="flex items-center gap-2 text-white">
       <span class="hover:underline cursor-pointer">Siga-nos</span>
       <i class="fab fa-twitter hover:text-gray-300 cursor-pointer"></i>
@@ -29,9 +27,7 @@
       <i class="fab fa-instagram hover:text-gray-300 cursor-pointer"></i>
     </div>
 
-    <!-- Seletores de idioma e moeda -->
     <div class="flex items-center gap-4 relative" x-data="{ openLang: false, openCurr: false }">
-      <!-- Idioma -->
       <div class="relative">
         <button @click="openLang = !openLang; openCurr = false"
                 class="flex items-center gap-1 hover:underline cursor-pointer">
@@ -45,7 +41,6 @@
         </ul>
       </div>
 
-      <!-- Moeda -->
       <div class="relative">
         <button @click="openCurr = !openCurr; openLang = false"
                 class="flex items-center gap-1 hover:underline cursor-pointer">
@@ -62,69 +57,48 @@
   </div>
 </div>
 
+<!-- Cabeçalho principal -->
+<header class="bg-green-600 text-white px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
+  <div class="flex items-center text-2xl font-bold">
+    <div class="bg-white text-green-600 w-8 h-8 rounded-full flex items-center justify-center mr-2">O</div>
+    <a href="{% url 'home' %}">PC MASTER</a>
+  </div>
 
-  <!-- Cabeçalho principal -->
-  <header
-
-  
-    class="bg-green-600 text-white px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-4"
-  >
-    <!-- Logo -->
-    <div class="flex items-center text-2xl font-bold">
-      <div
-        class="bg-white text-green-600 w-8 h-8 rounded-full flex items-center justify-center mr-2"
-      >
-        O
-      </div>
-      <a href="{% url 'home' %}">PC MASTER</a>
+  <div class="flex-1 w-full max-w-2xl">
+    <div class="relative">
+      <input type="text" placeholder="Buscar" class="w-full px-4 py-2 rounded text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-400">
+      <button class="absolute right-2 top-1/2 -translate-y-1/2 text-green-600">🔍</button>
     </div>
+  </div>
 
-    <!-- Barra de busca -->
-    <div class="flex-1 w-full max-w-2xl">
-      <div class="relative">
-        <input
-          type="text"
-          placeholder="Buscar"
-          class="w-full px-4 py-2 rounded text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-400"
-        />
-        <button class="absolute right-2 top-1/2 -translate-y-1/2 text-green-600">
-          🔍
-        </button>
-      </div>
-    </div>
-
-     <!-- Ícones de usuário -->
   <div class="flex items-center gap-4 text-xl">
     <span class="text-sm text-white">
-  <a href="{% url 'carrinho' %}" title="Carrinho" class="hover:text-gray-300">
-    <i class="bi bi-cart"></i>
-  </a>
-  {{ request.session.carrinho|length|default:0 }}
-</span>
-<span class="text-sm text-white ml-4"> <a href="#" title="Favoritos" class="hover:text-gray-300 "><i class="bi bi-heart"></i></a> {{ request.session.favoritos|length|default:0 }}</span>
-<a href="{% url 'cadastro' %}" title="Perfil" class="hover:text-gray-300"><i class="bi bi-person"></i></a>
+      <a href="{% url 'carrinho' %}" title="Carrinho" class="hover:text-gray-300">
+        <i class="bi bi-cart"></i>
+      </a>
+      {{ request.session.carrinho|length|default:0 }}
+    </span>
+    <span class="text-sm text-white ml-4">
+      <a href="#" title="Favoritos" class="hover:text-gray-300">
+        <i class="bi bi-heart"></i>
+      </a>
+      {{ request.session.favoritos|length|default:0 }}
+    </span>
+    <a href="{% url 'cadastro' %}" title="Perfil" class="hover:text-gray-300">
+      <i class="bi bi-person"></i>
+    </a>
   </div>
 </header>
 
-  <!-- Navegação inferior -->
+<!-- Navegação inferior -->
 <nav class="bg-white text-gray-800 px-6 py-2 border-b">
   <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
-    
     <div class="flex items-center gap-4">
       <div class="relative group">
-
-
-        
-        <!-- Botão estilizado -->
         <div class="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded cursor-pointer hover:bg-gray-200 transition">
           <span class="text-green-600 font-semibold">Todas as categorias</span>
           <span class="text-green-600 text-lg">▼</span>
-          
         </div>
-
-        
-
-        <!-- Dropdown de categorias -->
         <div class="absolute left-0 bg-white shadow-lg mt-2 rounded z-50 flex border w-[280px]
               opacity-0 invisible group-hover:opacity-100 group-hover:visible
               transition-all duration-200">
@@ -133,7 +107,6 @@
               {% for categoria in categorias %}
               <li class="relative group">
                 <a href="#" class="block px-4 py-2 hover:bg-gray-100">{{ categoria.nome }}</a>
-
                 <div class="absolute top-0 left-full bg-white w-64 shadow-lg hidden group-hover:block z-10">
                   <ul class="absolute overflow-auto space-y-2 text-sm text-gray-700 font-medium z-10 list-none">
                     {% for subcategoria in subcategorias %}
@@ -151,84 +124,77 @@
       </div>
     </div>
 
-   <a href="{% url 'rastrear_pedido' %}" class="flex items-center gap-1 text-gray-700 hover:text-green-600 transition">
+    <a href="{% url 'rastrear_pedido' %}" class="flex items-center gap-1 text-gray-700 hover:text-green-600 transition">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c1.657 0 3-1.343 3-3S13.657 5 12 5s-3 1.343-3 3 1.343 3 3 3z" />
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.341A8 8 0 104.57 15.34L12 21l7.428-5.659z" />
+      </svg>
+      Rastrear Pedido
+    </a>
 
-  <!-- Ícone localização -->
-  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c1.657 0 3-1.343 3-3S13.657 5 12 5s-3 1.343-3 3 1.343 3 3 3z" />
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.341A8 8 0 104.57 15.34L12 21l7.428-5.659z" />
-  </svg>
-  Rastrear Pedido
-</a>
-
-
-<a href="#" class="flex items-center gap-1 text-gray-700 hover:text-green-600 transition">
-  <!-- Ícone fone -->
-  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636a9 9 0 00-12.728 0M3 10v2a9 9 0 009 9h0a9 9 0 009-9v-2M8 14h.01M16 14h.01" />
-  </svg>
-  Atendimento ao Cliente
-</a>
-
+    <a href="#" class="flex items-center gap-1 text-gray-700 hover:text-green-600 transition">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636a9 9 0 00-12.728 0M3 10v2a9 9 0 009 9h0a9 9 0 009-9v-2M8 14h.01M16 14h.01" />
+      </svg>
+      Atendimento ao Cliente
+    </a>
 
     <div class="font-semibold text-green-700 flex items-center gap-1">
-    <span>4002-8922</span>
+      <span>4002-8922</span>
     </div>
-    
   </div>
 </nav>
 
-  <!-- Conteúdo da página -->
-  <main class="flex-grow px-6">
+<!-- Conteúdo da página -->
+<main class="flex-grow px-6">
     {% block body %}
     {% endblock %}
-  </main>
 
-  <!-- Rodapé -->
-  <footer class="bg-gray-900 text-white text-sm mt-10 px-6 py-10">
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-      <!-- Coluna 1 -->
-      <div>
-        <h4 class="font-bold mb-2">PC MASTER</h4>
-        <p>Atendimento e Suporte</p>
-        <p class="my-1">(88) 4002-8922</p>
-        <p>123 Centro Universitário Paraíso, Juazeiro, CE</p>
-        <p class="mt-1">info@pcmaster.com</p>
-      </div>
+    {% block content %}
+    {% endblock %}
+</main>
 
-      <!-- Coluna 2 -->
-      <div>
-        <h4 class="font-bold mb-2">PRINCIPAIS CATEGORIAS</h4>
-        <ul class="space-y-1">
-          <li>Computador e Laptop</li>
-          <li>Smartphone</li>
-          <li>Acessórios</li>
-          <li>TV & Casa</li>
-          <li class="text-green-500">Buscar em todas as categorias →</li>
-        </ul>
-      </div>
+<!-- Rodapé -->
+<footer class="bg-gray-900 text-white text-sm mt-10 px-6 py-10">
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+    <div>
+      <h4 class="font-bold mb-2">PC MASTER</h4>
+      <p>Atendimento e Suporte</p>
+      <p class="my-1">(88) 4002-8922</p>
+      <p>123 Centro Universitário Paraíso, Juazeiro, CE</p>
+      <p class="mt-1">info@pcmaster.com</p>
+    </div>
 
-      <!-- Coluna 3 -->
-      <div>
-        <h4 class="font-bold mb-2">LINKS RÁPIDOS</h4>
-        <ul class="space-y-1">
-          <li>Comprar um produto</li>
-          <li>Lista de desejos</li>
-          <li>Rastreamento de pedidos</li>
-          <li>Serviço ao cliente</li>
-        </ul>
-      </div>
+    <div>
+      <h4 class="font-bold mb-2">PRINCIPAIS CATEGORIAS</h4>
+      <ul class="space-y-1">
+        <li>Computador e Laptop</li>
+        <li>Smartphone</li>
+        <li>Acessórios</li>
+        <li>TV & Casa</li>
+        <li class="text-green-500">Buscar em todas as categorias →</li>
+      </ul>
+    </div>
 
-      <!-- Coluna 4 -->
-      <div>
-        <h4 class="font-bold mb-2">DOWNLOAD APP</h4>
-        <div class="flex flex-col space-y-2">
-          <img src="https://cdn.worldvectorlogo.com/logos/google-play-badge.svg" class="h-10" />
-          <img src="https://cdn.worldvectorlogo.com/logos/download-on-the-app-store-apple.svg" class="h-10" />
-        </div>
+    <div>
+      <h4 class="font-bold mb-2">LINKS RÁPIDOS</h4>
+      <ul class="space-y-1">
+        <li>Comprar um produto</li>
+        <li>Lista de desejos</li>
+        <li>Rastreamento de pedidos</li>
+        <li>Serviço ao cliente</li>
+      </ul>
+    </div>
+
+    <div>
+      <h4 class="font-bold mb-2">DOWNLOAD APP</h4>
+      <div class="flex flex-col space-y-2">
+        <img src="https://cdn.worldvectorlogo.com/logos/google-play-badge.svg" class="h-10" />
+        <img src="https://cdn.worldvectorlogo.com/logos/download-on-the-app-store-apple.svg" class="h-10" />
       </div>
     </div>
-  </footer>
+  </div>
+</footer>
 
 </body>
 </html>
