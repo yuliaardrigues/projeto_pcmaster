@@ -28,3 +28,15 @@ def adicionar_aos_favoritos(request, produto_id):
 def detalhe_produto(request, produto_id):
     produto = Produto.objects.get(id=produto_id)
     return render(request, 'products/produto_detalhe.html', {'produto': produto})
+
+
+
+def produtos_por_categoria(request, categoria_id):
+    categoria = get_object_or_404(Categoria, id=categoria_id)
+    produtos = Produto.objects.filter(categoria=categoria)
+    categorias = Categoria.objects.all()
+    return render(request, 'home/home.html', {
+        'produtos': produtos,
+        'categorias': categorias,
+        'categoria_selecionada': categoria
+    })

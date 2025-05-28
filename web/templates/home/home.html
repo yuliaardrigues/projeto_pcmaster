@@ -7,7 +7,6 @@
 
 <!-- Banner Promocional Xbox -->
 <section class="bg-gray-100 rounded-lg m-4 p-6 flex flex-col md:flex-row items-center justify-between">
-  <!-- Texto -->
   <div class="max-w-md text-center md:text-left">
     <p class="text-sm text-blue-500 font-semibold uppercase">O MELHOR PREÇO DO MERCADO</p>
     <h2 class="text-3xl font-bold text-gray-800 my-2">Xbox Consoles</h2>
@@ -17,17 +16,15 @@
     </button>
   </div>
 
-  <!-- Imagem + Preço -->
   <div class="relative mt-6 md:mt-0">
-    <img src="https://i.imgur.com/EaQO4Wf.png" alt="Xbox Series S console and controller displayed on a white background with a green accent, evoking a modern and energetic atmosphere. No visible text in the image." class="w-[280px] md:w-[320px]">
-" alt="Xbox Console" class="w-[280px] md:w-[320px]">
+    <img src="https://i.imgur.com/EaQO4Wf.png" alt="Xbox Console" class="w-[280px] md:w-[320px]">
     <div class="absolute top-0 right-0 bg-green-500 text-white text-lg font-semibold rounded-full px-4 py-1 shadow-lg">
       R$1299
     </div>
   </div>
 </section>
 
-<!-- Indicadores (bolinhas do carrossel) -->
+<!-- Indicadores -->
 <div class="flex justify-center mt-2">
   <span class="h-2 w-2 bg-black rounded-full mx-1"></span>
   <span class="h-2 w-2 bg-gray-400 rounded-full mx-1"></span>
@@ -54,99 +51,73 @@
   </div>
 </section>
 
-
+<!-- Featured Products -->
 <!-- Featured Products -->
 <section class="border rounded p-4">
   <div class="flex justify-between items-center mb-6">
-    {% if produtos %} 
+    {% if produtos %}
     {% with restante=produtos.0.tempo_restante %}
-    <h2 class="text-lg font-semibold">
-      Melhores ofertas
-    </h2>
-    {% endwith %} {% endif %}
-    <a href="{% url 'produto' %}" class="text-sm text-blue-600 hover:underline"
-      >Todos os produtos →</a
-    >
+    <h2 class="text-lg font-semibold">Melhores ofertas</h2>
+    {% endwith %}
+    {% endif %}
+    <a href="{% url 'produto' %}" class="text-sm text-blue-600 hover:underline">
+      Todos os produtos →
+    </a>
   </div>
-  <div class="grid grid-cols-4 md:grid-cols-6 gap-6">
 
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
     {% for produto in produtos %}
-<a href="{% url 'detalhe_produto' produto.id %}" class="block">
-  <div class="relative group border rounded p-4 bg-white shadow hover:shadow-lg transition">
+    <a href="{% url 'detalhe_produto' produto.id %}" class="block h-full">
+      <div class="relative group border rounded-lg p-4 bg-white shadow hover:shadow-md transition h-full flex flex-col justify-between text-sm">
 
-    <!-- Imagem do Produto -->
-    <div class="relative">
-      <img src="{{ produto.imagem.url }}" alt="{{ produto.nome }}" class="w-full h-48 object-cover rounded">
+        <!-- Imagem -->
+        <div class="relative">
+          <img src="{{ produto.imagem.url }}" alt="{{ produto.nome }}" class="w-full h-36 object-contain rounded-md">
 
-      <!-- Botões flutuantes -->
-      <div class="absolute inset-0 flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition duration-300">
-        <!-- Favoritar -->
-        <a href="{% url 'adicionar_aos_favoritos' produto.id %}" class="bg-white p-3 rounded-full shadow hover:scale-110 transition" onclick="event.stopPropagation();">
-          <i class="fas fa-heart text-red-500"></i>
-        </a>
+          <!-- Botões flutuantes -->
+          <div class="absolute inset-0 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition duration-300">
+            <a href="{% url 'adicionar_aos_favoritos' produto.id %}" class="bg-white p-2 rounded-full shadow hover:scale-110 transition" onclick="event.stopPropagation();">
+              <i class="fas fa-heart text-green-600 text-sm"></i>
+            </a>
+            <a href="{% url 'adicionar_ao_carrinho' produto.id %}" class="bg-white p-2 rounded-full shadow hover:scale-110 transition" onclick="event.stopPropagation();">
+              <i class="fas fa-shopping-cart text-black text-sm"></i>
+            </a>
+            <a href="{% url 'detalhe_produto' produto.id %}" class="bg-white p-2 rounded-full shadow hover:scale-110 transition" onclick="event.stopPropagation();">
+              <i class="fas fa-eye text-gray-800 text-sm"></i>
+            </a>
+          </div>
 
-        <!-- Carrinho -->
-        <a href="{% url 'adicionar_ao_carrinho' produto.id %}" class="bg-white p-3 rounded-full shadow hover:scale-110 transition" onclick="event.stopPropagation();">
-          <i class="fas fa-shopping-cart text-green-600"></i>
-        </a>
+          {% if produto.desconto_percentual > 0 %}
+          <div class="absolute top-2 left-2 bg-yellow-400 text-white text-[10px] px-1.5 py-0.5 rounded">
+            {{ produto.desconto_percentual }}% OFF
+          </div>
+          {% endif %}
 
-        <!-- Visualizar -->
-        <button onclick="visualizarProduto('{{ produto.id }}'); event.stopPropagation();" class="bg-white p-3 rounded-full shadow hover:scale-110 transition">
-          <i class="fas fa-eye text-blue-600"></i>
-        </button>
+          {% if produto.sale %}
+          <div class="absolute top-2 right-2 bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded">
+            HOT
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Conteúdo -->
+        <div class="mt-2 space-y-1">
+          <div class="text-yellow-500 text-xs">★★★★★ ({{ produto.avaliacoes|default:'52,677' }})</div>
+          <div class="font-semibold text-gray-800 leading-snug text-sm">{{ produto.nome|truncatechars:60 }}</div>
+          {% if produto.desconto_percentual > 0 %}
+            <strike class="text-gray-400 text-xs">R${{ produto.preco }}</strike>
+          {% endif %}
+          <div class="text-blue-700 font-bold text-sm">R${{ produto.sale_price }}</div>
+        </div>
+
       </div>
-
-      {% if produto.desconto_percentual > 0 %}
-      <div class="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded">
-        {{ produto.desconto_percentual }}% OFF
-      </div>
-      {% endif %}
-
-      {% if produto.sale %}
-      <div class="absolute top-2 right-2 bg-yellow-400 text-white text-xs px-2 py-1 rounded">
-        HOT
-      </div>
-      {% endif %}
-    </div>
-
-    <!-- Detalhes -->
-    <div class="mt-2 text-sm font-semibold text-gray-800">{{ produto.nome }}</div>
-    <div class="text-yellow-500 text-xs mt-1">★★★★★ (32.677)</div>
-    <strike class="text-gray-400">R${{ produto.preco }}</strike>
-    <div class="text-green-600 font-bold">R${{ produto.sale_price }}</div>
-
+    </a>
+    {% endfor %}
   </div>
-</a>
+</section>
 
-{% endfor %}
-
+<!-- Link para ícones -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-    <!-- Replique os blocos acima com outros produtos -->
-  </div>
-</section>
-
-<!-- Categories -->
-<section class="bg-white p-6 mt-4">
-  <h2 class="text-xl font-bold mb-4">Outras Categories</h2>
-  <div class="flex gap-4 overflow-x-auto">
-    
-   {% for categoria in categorias %}
-    <div class="flex-shrink-0 bg-gray-100 p-4 rounded text-center">
-      {% if categoria.imagem and categoria.imagem.url %}
-    <img
-        src="{{ categoria.imagem.url }}"
-        alt="{{ categoria.nome }}"
-        class="mx-auto"
-    />
-{% endif %}
-      <p>{{ categoria.nome }}</p>
-    </div>
-  {% endfor %}
-</div>
-  </div>
-  
-</section>
 
 
 
@@ -157,9 +128,7 @@
     <div class="bg-yellow-100 p-4 rounded text-center">
       <p class="font-semibold">20% OFF</p>
       <p>On Selected Items</p>
-      <button class="mt-2 px-4 py-1 bg-green-600 text-white rounded">
-        Shop Now
-      </button>
+      <button class="mt-2 px-4 py-1 bg-green-600 text-white rounded">Shop Now</button>
     </div>
   </div>
 </section>
@@ -168,4 +137,8 @@
 <footer class="bg-gray-900 text-white p-6 text-center">
   <p>© 2025 PC MASTER. All rights reserved.</p>
 </footer>
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 {% endblock %}

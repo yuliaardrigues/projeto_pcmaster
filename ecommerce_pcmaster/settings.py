@@ -131,3 +131,6 @@ MESSAGE_TAGS = {
     constants.WARNING: 'bg-yellow-100 text-yellow-800 border border-yellow-300',
     constants.ERROR: 'bg-red-100 text-red-800 border border-red-300',
 }
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

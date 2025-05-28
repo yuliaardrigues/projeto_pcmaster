@@ -65,13 +65,8 @@ def esqueci_senha(request):
     
         
 def carrinho_view(request):
-    # Exemplo de dados simulados (depois substituímos por dados reais)
-    produtos = [
-        {'nome': 'Xbox Console', 'preco': 1299, 'quantidade': 1, 'imagem': 'https://via.placeholder.com/100'},
-        {'nome': 'Headset Gamer', 'preco': 499, 'quantidade': 2, 'imagem': 'https://via.placeholder.com/100'},        
-    ]
-
-    total = sum(p['preco'] * p['quantidade'] for p in produtos)
-
-    return render(request, 'home/carrinho.html', {'produtos': produtos, 'total': total})
+    return render(request, 'usuario/carrinho.html')
  
+
+def rastrear_pedido(request):
+    return render(request, 'usuario/rastrear_pedido.html')

@@ -76,3 +76,5 @@ class Subcategoria(models.Model):
 
     def __str__(self):
         return self.nome
+    
+    # Removido: classe Produto duplicada e aninhada incorretamente.
