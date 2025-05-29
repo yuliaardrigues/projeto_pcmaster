@@ -4,8 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.messages import constants
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login
-from django.db.models.signals import post_save
-from django.dispatch import receiver
+
 
 
 def cadastro(request):
@@ -66,9 +65,4 @@ def esqueci_senha(request):
     return render(request, 'esqueci_senha.html')
     
         
-def carrinho_view(request):
-    return render(request, 'usuario/carrinho.html')
- 
 
-def rastrear_pedido(request):
-    return render(request, 'usuario/rastrear_pedido.html')

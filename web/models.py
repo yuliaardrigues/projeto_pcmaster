@@ -17,7 +17,17 @@ class Produto(models.Model):
     descricao = models.TextField(max_length=250, default='', blank=True)
     preco = models.DecimalField(default=0, max_digits=6, decimal_places=2)
     imagem = models.ImageField(upload_to='produtos_thumb')
+    nota = models.DecimalField(max_digits=3, decimal_places=1, null=True, blank=True)
 
+    def estrelas_cheias(self):
+        if self.nota is None:
+            return 0  # Retorna 0 se a nota for None
+        return int(self.nota)
+
+    def estrelas_meia(self):
+        if self.nota is None:
+            return 0  # Retorna 0 se a nota for None
+        return 1 if self.nota - int(self.nota) >= 0.5 else 0
     # add sale
 
     sale = models.BooleanField(default=False)
@@ -35,14 +45,6 @@ class Produto(models.Model):
             return int(((self.preco - self.sale_price) / self.preco) * 100)
         return 0
     
- 
-    def estrelas_cheias(self):
-        return int(self.nota)
-
-    def estrelas_meia(self):
-        return self.nota - int(self.nota) >= 0.5
-
-
 #carrinho de compras 
 class Carrinho(models.Model):
     estado = models.CharField(choices=[("0", "aberto"), ("1", "Finalizado")], max_length=2)

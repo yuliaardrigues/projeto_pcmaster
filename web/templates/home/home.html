@@ -1,24 +1,31 @@
-{% extends 'base.html' %}
-{% load static %}
-
-{% block body %}
-
-
+{% extends 'base.html' %} {% load static %} {% block content %}
 
 <!-- Banner Promocional Xbox -->
-<section class="bg-gray-100 rounded-lg m-4 p-6 flex flex-col md:flex-row items-center justify-between">
+<section
+  class="bg-gray-100 rounded-lg m-4 p-6 flex flex-col md:flex-row items-center justify-between"
+>
   <div class="max-w-md text-center md:text-left">
-    <p class="text-sm text-blue-500 font-semibold uppercase">O MELHOR PREÇO DO MERCADO</p>
+    <p class="text-sm text-blue-500 font-semibold uppercase">
+      O MELHOR PREÇO DO MERCADO
+    </p>
     <h2 class="text-3xl font-bold text-gray-800 my-2">Xbox Consoles</h2>
     <p class="text-gray-600 mb-4">O seu jogo com 50% de desconto.</p>
-    <button class="bg-green-600 text-white font-bold py-2 px-6 rounded hover:bg-green-700 transition flex items-center gap-2">
+    <button
+      class="bg-green-600 text-white font-bold py-2 px-6 rounded hover:bg-green-700 transition flex items-center gap-2"
+    >
       COMPRAR AGORA <i class="fas fa-arrow-right"></i>
     </button>
   </div>
 
   <div class="relative mt-6 md:mt-0">
-    <img src="https://i.imgur.com/EaQO4Wf.png" alt="Xbox Console" class="w-[280px] md:w-[320px]">
-    <div class="absolute top-0 right-0 bg-green-500 text-white text-lg font-semibold rounded-full px-4 py-1 shadow-lg">
+    <img
+      src="https://i.imgur.com/EaQO4Wf.png"
+      alt="Xbox Console"
+      class="w-[280px] md:w-[320px]"
+    />
+    <div
+      class="absolute top-0 right-0 bg-green-500 text-white text-lg font-semibold rounded-full px-4 py-1 shadow-lg"
+    >
       R$1299
     </div>
   </div>
@@ -32,7 +39,9 @@
 </div>
 
 <!-- Benefícios -->
-<section class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8 p-4 text-center border-t border-gray-200">
+<section
+  class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8 p-4 text-center border-t border-gray-200"
+>
   <div>
     <i class="fas fa-box-open text-2xl text-gray-700 mb-2"></i>
     <p class="text-sm font-semibold">ENTREGA EM TODO O BRASIL</p>
@@ -56,20 +65,24 @@
 <section class="border rounded p-4">
   <div class="flex justify-between items-center mb-6">
     <h2 class="text-lg font-semibold">Melhores ofertas</h2>
-    <a href="" class="text-sm text-blue-600 hover:underline">Todos os produtos →</a>
+    <a href="" class="text-sm text-blue-600 hover:underline"
+      >Todos os produtos →</a
+    >
   </div>
 
   <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
     {% for produto in produtos %}
     <div class="border rounded p-6 relative group">
       {% if produto.desconto_percentual > 0 %}
-      <div class="absolute top-4 left-4 bg-red-500 text-white text-xs px-2 py-1 rounded">
+      <div
+        class="absolute top-4 left-4 bg-red-500 text-white text-xs px-2 py-1 rounded"
+      >
         {{ produto.desconto_percentual }}% OFF
       </div>
-      {% endif %}
-
-      {% if produto.sale %}
-      <div class="absolute top-2 right-2 bg-yellow-400 text-white text-xs px-2 py-1 rounded">
+      {% endif %} {% if produto.sale %}
+      <div
+        class="absolute top-2 right-2 bg-yellow-400 text-white text-xs px-2 py-1 rounded"
+      >
         HOT
       </div>
       {% endif %}
@@ -81,14 +94,29 @@
       />
 
       <!-- Botões flutuantes -->
-      <div class="absolute inset-0 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition duration-300">
-        <a href="{% url 'adicionar_aos_favoritos' produto.id %}" class="bg-white p-2 rounded-full shadow hover:scale-110 transition" aria-label="Favoritar">
+
+      <div
+        class="absolute inset-0 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition duration-300"
+      >
+        <a
+          href="{% url 'adicionar_aos_favoritos' produto.id %}"
+          class="bg-white p-2 rounded-full shadow hover:scale-110 transition"
+          aria-label="Favoritar"
+        >
           <i class="fas fa-heart text-green-600 text-sm"></i>
         </a>
-        <a href="{% url 'adicionar_ao_carrinho' produto.id %}" class="bg-white p-2 rounded-full shadow hover:scale-110 transition" aria-label="Adicionar ao carrinho">
+        <a
+          href="{% url 'carrinho' %}?produto_id={{ produto.id }}&quantidade=1"
+          class="bg-white p-2 rounded-full shadow hover:scale-110 transition"
+          aria-label="Adicionar ao carrinho"
+        >
           <i class="fas fa-shopping-cart text-black text-sm"></i>
         </a>
-        <a href="{% url 'produto' produto.id %}" class="bg-white p-2 rounded-full shadow hover:scale-110 transition" aria-label="Ver detalhes do produto">
+        <a
+          href="{% url 'produto' produto.id %}"
+          class="bg-white p-2 rounded-full shadow hover:scale-110 transition"
+          aria-label="Ver detalhes do produto"
+        >
           <i class="fas fa-eye text-gray-800 text-sm"></i>
         </a>
       </div>
@@ -99,10 +127,10 @@
       <div class="text-yellow-500 text-xs mt-1">★★★★★ (32.677)</div>
 
       {% if produto.sale_price %}
-        <strike class="text-gray-400">R${{ produto.preco }}</strike>
-        <div class="text-green-600 font-bold">R${{ produto.sale_price }}</div>
+      <strike class="text-gray-400">R${{ produto.preco }}</strike>
+      <div class="text-green-600 font-bold">R${{ produto.sale_price }}</div>
       {% else %}
-        <div class="text-gray-800 font-bold">R${{ produto.preco }}</div>
+      <div class="text-gray-800 font-bold">R${{ produto.preco }}</div>
       {% endif %}
     </div>
     {% endfor %}
@@ -110,9 +138,10 @@
 </section>
 
 <!-- Link para ícones -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+/>
 
 <!-- Offers -->
 <section class="p-6">
@@ -121,7 +150,9 @@
     <div class="bg-yellow-100 p-4 rounded text-center">
       <p class="font-semibold">20% OFF</p>
       <p>On Selected Items</p>
-      <button class="mt-2 px-4 py-1 bg-green-600 text-white rounded">Shop Now</button>
+      <button class="mt-2 px-4 py-1 bg-green-600 text-white rounded">
+        Shop Now
+      </button>
     </div>
   </div>
 </section>
@@ -132,6 +163,9 @@
 </footer>
 
 <!-- Font Awesome -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+/>
 
 {% endblock %}
