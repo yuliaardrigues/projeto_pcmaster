@@ -4,8 +4,8 @@
 {% block content %}
 <div class="max-w-7xl mx-auto p-6">
   <h2 class="text-2xl font-semibold mb-4">Informações de pagamento</h2>
-  <form class="grid grid-cols-1 md:grid-cols-3 gap-6">
-
+  <form method="post"  action="{% url 'finalizar_pedido' %}" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    {% csrf_token %}
     <!-- COLUNA PRINCIPAL (ESQUERDA - 2/3) -->
     <div class="md:col-span-2 space-y-6">
       <!-- Informações do cliente -->
@@ -123,7 +123,7 @@
         <span>R$ {{ total }}</span>
       </div>
       <button type="submit"
-        class="mt-6 bg-green-500 hover:bg-green-600 text-white w-full py-3 rounded font-semibold">
+        class="mt-6 bg-green-500 hover:bg-green-600 text-white w-full py-3 rounded font-semibold"> 
         EFETUAR PAGAMENTO →
       </button>
     </div>

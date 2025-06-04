@@ -155,9 +155,16 @@ def finalizar_pedido(request):
                 valor_total=item['subtotal'],
                 status=True
             )
+        
+        # Adicionar pontos ao perfil do usuário autenticado
+        if request.user.is_authenticated:
+            perfil = request.user.perfil
+            perfil.pontos += 10  
+            perfil.save()
+
         # Limpar carrinho
         request.session['carrinho'] = {}
-        return redirect('home')
+        return redirect('home') 
 
     return render(request, 'web/finalizar_pedido.html', contexto)
 
