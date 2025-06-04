@@ -1,7 +1,6 @@
 from django.db import models
-import datetime
-
-
+from django.db import models
+from django.utils import timezone
 
 class Categoria(models.Model):
     nome = models.CharField(max_length=200)
@@ -69,12 +68,15 @@ class Subcategoria(models.Model):
     def __str__(self):
         return self.nome
     
+
+
 class Pedido(models.Model):
-    produto = models.ForeignKey(Produto, on_delete=models.CASCADE)
+    produto = models.ForeignKey('Produto', on_delete=models.CASCADE)
     quantidade = models.IntegerField(default=1)
     valor_total = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.BooleanField(default=False)
-    date = models.DateField(default=datetime.datetime.today)
+    data_pedido = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return f"Pedido de {self.quantidade}x {self.produto.nome} em {self.date}"
+        return f"Pedido de {self.quantidade}x {self.produto.nome} em {self.data_pedido.strftime('%d/%m/%Y %H:%M')}"
+
