@@ -59,17 +59,7 @@ class CarrinhoProduto(models.Model):
 
     def __str__(self):
         return f"{self.quantidade} {self.produto.nome}"
-    
-
-class Pedido(models.Model):
-        Produto = models.ForeignKey(Produto, on_delete=models.CASCADE)
-        quantidade = models.IntegerField(default=1)
-        status = models.BooleanField(default=False)
-        valor_total = models.DecimalField(max_digits=10, decimal_places=2)
-        date = models.DateField(default=datetime.datetime.today)
-
-        def __str__(self):
-            return f"Pedido {self.Produto}"   
+      
         
 class Subcategoria(models.Model):
     nome = models.CharField(max_length=100)
@@ -79,4 +69,12 @@ class Subcategoria(models.Model):
     def __str__(self):
         return self.nome
     
+class Pedido(models.Model):
+    produto = models.ForeignKey(Produto, on_delete=models.CASCADE)
+    quantidade = models.IntegerField(default=1)
+    valor_total = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.BooleanField(default=False)
+    date = models.DateField(default=datetime.datetime.today)
 
+    def __str__(self):
+        return f"Pedido de {self.quantidade}x {self.produto.nome} em {self.date}"

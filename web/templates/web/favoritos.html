@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 py-8">
+  <h1 class="text-3xl font-bold mb-6">Meus Favoritos</h1>
+
+  {% if produtos %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+      {% for produto in produtos %}
+        <div class="border rounded-lg shadow hover:shadow-md transition duration-200">
+          <img src="{{ produto.imagem.url }}" alt="{{ produto.nome }}" class="w-full h-48 object-cover rounded-t-lg">
+
+          <div class="p-4">
+            <h2 class="text-xl font-semibold mb-2">{{ produto.nome }}</h2>
+            <p class="text-green-600 font-bold mb-4">R$ {{ produto.preco }}</p>
+            <div class="flex justify-between items-center">
+              <a href="{% url 'remover_dos_favoritos' produto.id %}" 
+                 class="text-red-500 hover:underline text-sm">
+                Remover dos favoritos
+              </a>
+              <a href="{% url 'produto_detalhe' produto.id %}" 
+                 class="text-blue-600 hover:underline text-sm">
+                Ver detalhes
+              </a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-gray-600 text-lg">Você ainda não adicionou nenhum produto aos favoritos.</p>
+  {% endif %}
+</div>
+{% endblock %}

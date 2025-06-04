@@ -59,10 +59,57 @@ def login(request):
 def esqueci_senha(request):
     if request.method == 'POST':
         email = request.POST.get('email')
-        # Aqui você implementaria envio de e-mail ou lógica de recuperação
-        messages.success(request, 'Se o e-mail existir, as instruções foram enviadas.')
-        return redirect('login')  # Redireciona de volta ao login
-    return render(request, 'esqueci_senha.html')
-    
-        
 
+        # Exemplo simples: verificar se email existe, enviar código etc.
+        if email:
+            # Lógica para enviar código aqui...
+
+            # Depois redireciona para mudar senha
+            return redirect('mudar_senha')
+        else:
+            messages.error(request, "Informe um email válido.")
+            # Aqui precisa retornar render para mostrar a página com mensagem
+            return render(request, 'esqueci_senha.html')
+
+    # Se for GET, apenas exibe o formulário
+    return render(request, 'esqueci_senha.html')
+
+
+        
+def mudar_senha(request):
+    if request.method == 'POST':
+        codigo_enviado = request.POST.get('codigo')
+        nova_senha = request.POST.get('nova_senha')
+        confirmar_senha = request.POST.get('confirmar_senha')
+
+        codigo_salvo = request.session.get('codigo_verificacao')
+        email_usuario = request.session.get('email_recuperacao')
+
+        if not (codigo_enviado and nova_senha and confirmar_senha):
+            messages.error(request, 'Todos os campos são obrigatórios.')
+            return redirect('mudar_senha')
+
+        if codigo_enviado != codigo_salvo:
+            messages.error(request, 'Código de verificação inválido.')
+            return redirect('mudar_senha')
+
+        if nova_senha != confirmar_senha:
+            messages.error(request, 'As senhas não coincidem.')
+            return redirect('mudar_senha')
+
+        try:
+            user = User.objects.get(email=email_usuario)
+            user.password = make_password(nova_senha)
+            user.save()
+
+            # Remove dados da sessão
+            request.session.pop('codigo_verificacao', None)
+            request.session.pop('email_recuperacao', None)
+
+            messages.success(request, 'Senha alterada com sucesso! Faça login com sua nova senha.')
+            return redirect('login')
+        except User.DoesNotExist:
+            messages.error(request, 'Usuário não encontrado.')
+            return redirect('mudar_senha')
+
+    return render(request, 'mudar_senha.html')

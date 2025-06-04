@@ -79,11 +79,12 @@
       {{ request.session.carrinho|length|default:0 }}
     </span>
     <span class="text-sm text-white ml-4">
-      <a href="#" title="Favoritos" class="hover:text-gray-300">
-        <i class="bi bi-heart"></i>
-      </a>
-      {{ request.session.favoritos|length|default:0 }}
-    </span>
+  <a href="{% url 'favoritos' %}" title="Favoritos" class="hover:text-gray-300">
+    <i class="bi bi-heart"></i>
+  </a>
+  {{ request.session.favoritos|length|default:0 }}
+</span>
+
     <a href="{% url 'cadastro' %}" title="Perfil" class="hover:text-gray-300">
       <i class="bi bi-person"></i>
     </a>

@@ -15,6 +15,10 @@ urlpatterns = [
     # Adicionar produto aos favoritos
     path('favoritos/adicionar/<int:produto_id>/', views.adicionar_aos_favoritos, name='adicionar_aos_favoritos'),
 
-    # Filtrar produtos por categoria
-    
+    path('finalizar_pedido/', views.finalizar_pedido, name='finalizar_pedido'), 
+
+    path('favoritos/', views.favoritos, name='favoritos'),
+
+    path('favoritos/remover/<int:produto_id>/', views.remover_dos_favoritos, name='remover_dos_favoritos'),
+
 ]

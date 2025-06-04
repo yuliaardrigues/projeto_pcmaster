@@ -26,10 +26,25 @@
             </td>
             <td>R$ {{ item.produto.preco }}</td>
             <td>
-              <form method="post" action="" class="flex items-center gap-2">
+              <!-- Decrement -->
+              <form method="post" action="" class="inline-block">
                 {% csrf_token %}
+                <input type="hidden" name="produto_id" value="{{ item.produto.id }}">
                 <button type="submit" name="action" value="decrement" class="px-2 py-1 border rounded">-</button>
-                <input type="text" name="quantidade" value="{{ item.quantidade }}" class="w-12 text-center border rounded" />
+              </form>
+
+              <!-- Quantidade manual -->
+              <form method="post" action="" class="inline-block">
+                {% csrf_token %}
+                <input type="hidden" name="produto_id" value="{{ item.produto.id }}">
+                <input type="number" min="1" name="quantidade" value="{{ item.quantidade }}" class="w-16 text-center border rounded" />
+                <button type="submit" name="action" value="update" class="hidden">Atualizar</button>
+              </form>
+
+              <!-- Increment -->
+              <form method="post" action="" class="inline-block">
+                {% csrf_token %}
+                <input type="hidden" name="produto_id" value="{{ item.produto.id }}">
                 <button type="submit" name="action" value="increment" class="px-2 py-1 border rounded">+</button>
               </form>
             </td>
@@ -37,7 +52,8 @@
             <td>
               <form method="post" action="">
                 {% csrf_token %}
-                <button type="submit" class="text-red-600 hover:underline">Remover</button>
+                <input type="hidden" name="produto_id" value="{{ item.produto.id }}">
+                <button type="submit" name="action" value="remove" class="text-red-600 hover:underline">Remover</button>
               </form>
             </td>
           </tr>
@@ -50,8 +66,8 @@
       </table>
 
       <div class="mt-4 flex justify-between">
-        <a href="" class="px-4 py-2 border rounded hover:bg-gray-100">← Voltar às compras</a>
-        <a href="" class="px-4 py-2 border rounded hover:bg-gray-100">Atualizar Carrinho</a>
+        <a href="{% url 'home' %}" class="px-4 py-2 border rounded hover:bg-gray-100">← Voltar às compras</a>
+        <a href="{% url 'carrinho' %}" class="px-4 py-2 border rounded hover:bg-gray-100">Atualizar Carrinho</a>
       </div>
     </div>
 
@@ -81,7 +97,7 @@
         </div>
       </div>
 
-      <a href="" class="block w-full bg-green-600 text-white text-center py-3 rounded mt-6 hover:bg-green-700">
+      <a href="{% url 'finalizar_pedido' %}" class="block w-full bg-green-600 text-white text-center py-3 rounded mt-6 hover:bg-green-700">
         Proceder para o Pagamento →
       </a>
 
