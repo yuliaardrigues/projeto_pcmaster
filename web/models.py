@@ -1,7 +1,7 @@
 from django.db import models
 from django.db import models
 from django.utils import timezone
-
+from django.contrib.auth.models import User
 class Categoria(models.Model):
     nome = models.CharField(max_length=200)
     imagem = models.ImageField(upload_to='categorias/', null=True, blank=True)
@@ -71,12 +71,12 @@ class Subcategoria(models.Model):
 
 
 class Pedido(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     produto = models.ForeignKey('Produto', on_delete=models.CASCADE)
     quantidade = models.IntegerField(default=1)
     valor_total = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.BooleanField(default=False)
-    data_pedido = models.DateTimeField(default=timezone.now)
-
+    data_pedido = models.DateTimeField()
     def __str__(self):
         return f"Pedido de {self.quantidade}x {self.produto.nome} em {self.data_pedido.strftime('%d/%m/%Y %H:%M')}"
 

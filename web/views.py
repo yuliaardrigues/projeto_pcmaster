@@ -1,6 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Produto, Categoria, Subcategoria, Pedido
+from usuario.models import Perfil
 from django.views.decorators.http import require_http_methods
+from django.utils import timezone
+from django.contrib.auth.decorators import login_required
 
 def home(request):
     produtos = Produto.objects.all()
@@ -114,59 +117,71 @@ def carrinho(request):
     return render(request, 'products/carrinho.html', contexto)
 
 
+@login_required  # remova se quiser permitir checkout sem login
 def finalizar_pedido(request):
-    carrinho = request.session.get('carrinho', {})
+
+    carrinho = request.session.get("carrinho", {})
+
     if not carrinho:
-        return redirect('carrinho')
+        return redirect("carrinho")
 
-    itens = []
-    subtotal = 0
-    desconto = 0  # Pode aplicar cupom
+    itens, subtotal, desconto = [], 0, 0  # implemente cupons no futuro
 
+    # ----- monta lista de itens -----
     for pid, qtd in carrinho.items():
         try:
-            produto = get_object_or_404(Produto, id=pid)
-        except ValueError:
-            continue
+            pid_int = int(pid)
+        except (ValueError, TypeError):
+            continue  # ignora IDs inválidos
+
+        produto = get_object_or_404(Produto, id=pid_int)
 
         subtotal_item = produto.preco * qtd
         subtotal += subtotal_item
         itens.append({
-            'produto': produto,
-            'quantidade': qtd,
-            'subtotal': subtotal_item,
+            "produto": produto,
+            "quantidade": qtd,
+            "subtotal": subtotal_item,
         })
 
     total = subtotal - desconto
 
-    contexto = {
-        'itens': itens,
-        'subtotal': subtotal,
-        'desconto': desconto,
-        'total': total,
-    }
-
-    if request.method == 'POST':
-        # Criar pedidos
+    # ----- grava pedido -----
+    if request.method == "POST":
         for item in itens:
             Pedido.objects.create(
-                produto=item['produto'],
-                quantidade=item['quantidade'],
-                valor_total=item['subtotal'],
-                status=True
+                usuario=request.user,  # adicione este FK ao model
+                produto=item["produto"],
+                quantidade=item["quantidade"],
+                valor_total=item["subtotal"],
+                status=True,
+                data_pedido=timezone.now(),
             )
-        
-        # Adicionar pontos ao perfil do usuário autenticado
-        if request.user.is_authenticated:
+
+        # pontos de fidelidade (1 ponto por R$ 10,00)
+        try:
             perfil = request.user.perfil
-            perfil.pontos += 10  
-            perfil.save()
+        except Perfil.DoesNotExist:
+            perfil = Perfil.objects.create(usuario=request.user)
 
-        # Limpar carrinho
-        request.session['carrinho'] = {}
-        return redirect('home') 
+        perfil.pontos += int(total / 10)
+        perfil.save()
 
-    return render(request, 'web/finalizar_pedido.html', contexto)
+        # limpa carrinho
+        request.session["carrinho"] = {}
+        request.session.modified = True
+
+        return redirect("home")
+
+    # ----- exibe página -----
+    contexto = {
+        "itens": itens,
+        "subtotal": subtotal,
+        "desconto": desconto,
+        "total": total,
+    }
+    return render(request, "web/finalizar_pedido.html", contexto)
+
 
 def favoritos(request):
     favoritos_ids = request.session.get('favoritos', [])
@@ -178,4 +193,17 @@ def remover_dos_favoritos(request, produto_id):
     if produto_id in favoritos:
         favoritos.remove(produto_id)
         request.session['favoritos'] = favoritos
-    return redirect('favoritos')  # Redireciona de volta para a página de favoritos
+    return redirect('favoritos') 
+
+def adicionar_ao_carrinho(request):
+    produto_id = request.POST.get('produto_id')
+    quantidade = int(request.POST.get('quantidade', 1))
+
+    carrinho = request.session.get('carrinho', {})
+
+    if produto_id:
+        produto_id = str(produto_id)
+        carrinho[produto_id] = carrinho.get(produto_id, 0) + quantidade
+        request.session['carrinho'] = carrinho
+
+    return redirect('carrinho')

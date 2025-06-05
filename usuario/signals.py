@@ -6,4 +6,4 @@ from .models import Perfil
 @receiver(post_save, sender=User)
 def criar_perfil(sender, instance, created, **kwargs):
     if created:
-        Perfil.objects.create(user=instance)
+        Perfil.objects.create(usuario=instance)

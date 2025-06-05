@@ -1,162 +1,234 @@
-{% extends 'base.html' %}
-{% load static %}
-
-{% block content %}
+{% extends 'base.html' %} {% load static %} {% block content %}
 <div class="max-w-6xl mx-auto px-4 py-8">
-    <!-- Breadcrumb -->
-    <div class="flex items-center text-sm text-gray-500 mb-6">
-        <a href="{% url 'home' %}" class="hover:text-green-600">Home</a>
-        <span class="mx-2">/</span>
-        <a href="#" class="hover:text-green-600">Produtos</a> 
-        <span class="mx-2">/</span>
-        <span class="text-gray-800">{{ produto.nome|truncatechars:30 }}</span>
+  <!-- Breadcrumb -->
+  <div class="flex items-center text-sm text-gray-500 mb-6">
+    <a href="{% url 'home' %}" class="hover:text-green-600">Home</a>
+    <span class="mx-2">/</span>
+    <a href="#" class="hover:text-green-600">Produtos</a>
+    <span class="mx-2">/</span>
+    <span class="text-gray-800">{{ produto.nome|truncatechars:30 }}</span>
+  </div>
+
+  <div class="flex flex-col lg:flex-row gap-8">
+    <!-- Galeria -->
+    <div class="lg:w-1/2">
+      <div class="bg-gray-50 rounded-lg p-4 mb-4">
+        <img
+          src="{{ produto.imagem.url }}"
+          alt="{{ produto.nome }}"
+          class="w-full h-80 object-contain"
+          id="mainProductImage"
+        />
+      </div>
+      <div class="flex gap-2">
+        <div
+          class="w-16 h-16 border rounded cursor-pointer hover:border-green-500 transition"
+          onclick="document.getElementById('mainProductImage').src = '{{ produto.imagem.url }}'"
+        >
+          <img
+            src="{{ produto.imagem.url }}"
+            class="w-full h-full object-contain"
+            alt="Thumbnail"
+          />
+        </div>
+      </div>
     </div>
 
-    <div class="flex flex-col lg:flex-row gap-8">
-        <!-- Galeria -->
-        <div class="lg:w-1/2">
-            <div class="bg-gray-50 rounded-lg p-4 mb-4">
-                <img src="{{ produto.imagem.url }}" alt="{{ produto.nome }}" class="w-full h-80 object-contain" id="mainProductImage">
-            </div>
-            <div class="flex gap-2">
-                <div class="w-16 h-16 border rounded cursor-pointer hover:border-green-500 transition"
-                     onclick="document.getElementById('mainProductImage').src = '{{ produto.imagem.url }}'">
-                    <img src="{{ produto.imagem.url }}" class="w-full h-full object-contain" alt="Thumbnail">
-                </div>
-            </div>
+    <!-- Detalhes -->
+    <div class="lg:w-1/2">
+      <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
+        {{ produto.nome }}
+      </h1>
+
+      <!-- Avaliação -->
+      <div class="flex items-center mb-4">
+        <div class="flex text-yellow-400 mr-2">
+          {% for i in "x"|rjust:estrelas_cheias %}
+          <i class="fas fa-star"></i>
+          {% endfor %} {% if estrelas_meia %}
+          <i class="fas fa-star-half-alt"></i>
+          {% endif %} {% for i in "x"|rjust:nota_restante %}
+          <i class="far fa-star"></i>
+          {% endfor %}
+        </div>
+        <span class="text-sm text-gray-600">(Ex: 32 avaliações)</span>
+      </div>
+
+      <!-- Preço -->
+      <div class="mb-6">
+        {% if produto.sale %}
+        <div class="flex items-center gap-3">
+          <span class="text-3xl font-bold text-green-600"
+            >R$ {{ produto.sale_price }}</span
+          >
+          <span class="text-lg text-gray-500 line-through"
+            >R$ {{ produto.preco }}</span
+          >
+          {% if produto.desconto_percentual > 0 %}
+          <span
+            class="bg-red-100 text-red-600 px-2 py-1 rounded text-sm font-medium"
+          >
+            -{{ produto.desconto_percentual }}% OFF
+          </span>
+          {% endif %}
+        </div>
+        {% else %}
+        <span class="text-3xl font-bold text-gray-800"
+          >R$ {{ produto.preco }}</span
+        >
+        {% endif %}
+      </div>
+
+      <!-- Descrição -->
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold mb-2">Descrição</h3>
+        <p class="text-gray-600">{{ produto.descricao|linebreaksbr }}</p>
+      </div>
+
+      <!-- Quantidade e Ações -->
+      <form
+        method="post"
+        action="{% url 'adicionar_ao_carrinho' %}"
+        class="mb-6"
+      >
+        {% csrf_token %}
+        <input type="hidden" name="produto_id" value="{{ produto.id }}" />
+
+        <!-- Quantidade -->
+        <div class="mb-6">
+          <h4 class="font-medium mb-2">Quantidade</h4>
+          <div class="flex items-center">
+            <button
+              type="button"
+              class="px-3 py-1 border rounded-l hover:bg-gray-100"
+              onclick="decrementQuantity()"
+            >
+              -
+            </button>
+            <input
+              type="number"
+              name="quantidade"
+              value="1"
+              class="w-12 text-center border-t border-b py-1"
+              id="quantityInput"
+              min="1"
+            />
+            <button
+              type="button"
+              class="px-3 py-1 border rounded-r hover:bg-gray-100"
+              onclick="incrementQuantity()"
+            >
+              +
+            </button>
+          </div>
         </div>
 
-        <!-- Detalhes -->
-        <div class="lg:w-1/2">
-            <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">{{ produto.nome }}</h1>
+        <!-- Botão -->
+        <button
+          type="submit"
+          class="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-lg font-medium transition flex items-center justify-center gap-2 mb-3"
+        >
+          <i class="fas fa-shopping-cart"></i> Adicionar ao Carrinho
+        </button>
+      </form>
 
-            <!-- Avaliação -->
-            <div class="flex items-center mb-4">
-                <div class="flex text-yellow-400 mr-2">
-                    {% for i in "x"|rjust:estrelas_cheias %}
-                        <i class="fas fa-star"></i>
-                    {% endfor %}
+      <form
+        method="post"
+        action="{% url 'adicionar_aos_favoritos' produto.id %}"
+      >
+        {% csrf_token %}
+        <button
+          type="submit"
+          class="w-full border border-green-600 text-green-600 hover:bg-green-50 py-3 px-6 rounded-lg font-medium transition flex items-center justify-center gap-2"
+        >
+          <i class="far fa-heart"></i> Adicionar aos Favoritos
+        </button>
+      </form>
 
-                    {% if estrelas_meia %}
-                        <i class="fas fa-star-half-alt"></i>
-                    {% endif %}
-
-                    {% for i in "x"|rjust:nota_restante %}
-                        <i class="far fa-star"></i>
-                    {% endfor %}
-                </div>
-                <span class="text-sm text-gray-600">(Ex: 32 avaliações)</span> 
+      <!-- Entrega e Garantia -->
+      <div class="mt-8 pt-6 border-t border-gray-200">
+        <div class="grid grid-cols-2 gap-4">
+          <div class="flex items-center gap-3">
+            <i class="fas fa-truck text-green-600"></i>
+            <div>
+              <p class="font-medium">Frete Grátis</p>
+              <p class="text-xs text-gray-500">Para todo Brasil</p>
             </div>
-
-            <!-- Preço -->
-            <div class="mb-6">
-                {% if produto.sale %}
-                    <div class="flex items-center gap-3">
-                        <span class="text-3xl font-bold text-green-600">R$ {{ produto.sale_price }}</span>
-                        <span class="text-lg text-gray-500 line-through">R$ {{ produto.preco }}</span>
-                        {% if produto.desconto_percentual > 0 %}
-                            <span class="bg-red-100 text-red-600 px-2 py-1 rounded text-sm font-medium">
-                                -{{ produto.desconto_percentual }}% OFF
-                            </span>
-                        {% endif %}
-                    </div>
-                {% else %}
-                    <span class="text-3xl font-bold text-gray-800">R$ {{ produto.preco }}</span>
-                {% endif %}
+          </div>
+          <div class="flex items-center gap-3">
+            <i class="fas fa-shield-alt text-green-600"></i>
+            <div>
+              <p class="font-medium">Garantia</p>
+              <p class="text-xs text-gray-500">12 meses</p>
             </div>
-
-            <!-- Descrição -->
-            <div class="mb-6">
-                <h3 class="text-lg font-semibold mb-2">Descrição</h3>
-                <p class="text-gray-600">{{ produto.descricao|linebreaksbr }}</p>
-            </div>
-
-            <!-- Quantidade e Ações -->
-            <form method="post" action="{% url 'carrinho' %}" class="mb-6">
-                {% csrf_token %}
-                <input type="hidden" name="produto_id" value="{{ produto.id }}">
-                <div class="mb-6">
-                    <h4 class="font-medium mb-2">Quantidade</h4>
-                    <div class="flex items-center">
-                        <button type="button" class="px-3 py-1 border rounded-l hover:bg-gray-100" onclick="decrementQuantity()">-</button>
-                        <input type="number" name="quantity" value="1" class="w-12 text-center border-t border-b py-1" id="quantityInput" min="1">
-                        <button type="button" class="px-3 py-1 border rounded-r hover:bg-gray-100" onclick="incrementQuantity()">+</button>
-                    </div>
-                </div>
-
-                <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-lg font-medium transition flex items-center justify-center gap-2 mb-3">
-                    <i class="fas fa-shopping-cart"></i> Adicionar ao Carrinho
-                </button>
-            </form>
-
-            <form method="post" action="{% url 'adicionar_aos_favoritos' produto.id %}">
-                {% csrf_token %}
-                <button type="submit" class="w-full border border-green-600 text-green-600 hover:bg-green-50 py-3 px-6 rounded-lg font-medium transition flex items-center justify-center gap-2">
-                    <i class="far fa-heart"></i> Adicionar aos Favoritos
-                </button>
-            </form>
-
-            <!-- Entrega e Garantia -->
-            <div class="mt-8 pt-6 border-t border-gray-200">
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="flex items-center gap-3">
-                        <i class="fas fa-truck text-green-600"></i>
-                        <div>
-                            <p class="font-medium">Frete Grátis</p>
-                            <p class="text-xs text-gray-500">Para todo Brasil</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <i class="fas fa-shield-alt text-green-600"></i>
-                        <div>
-                            <p class="font-medium">Garantia</p>
-                            <p class="text-xs text-gray-500">12 meses</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+          </div>
         </div>
+      </div>
     </div>
+  </div>
 
-    <!-- Produtos Relacionados -->
-    <div class="mt-16">
-        <h3 class="text-xl font-bold mb-6">Produtos Relacionados</h3>
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {# 
-            {% for rel in produtos_relacionados %}
-                <a href="{% url 'produto' rel.id %}">
-                    <div class="border rounded-lg p-3 hover:shadow-md transition">
-                        <div class="relative h-40 mb-3">
-                            <img src="{{ rel.imagem.url }}" alt="{{ rel.nome }}" class="w-full h-full object-contain">
-                        </div>
-                        <h4 class="font-medium text-sm group-hover:text-green-600">{{ rel.nome|truncatechars:40 }}</h4>
-                        <p class="text-green-600 font-bold mt-1">R$ {{ rel.sale_price|default:rel.preco }}</p>
-                    </div>
-                </a>
-            {% endfor %}
-            #}
+  <!-- Produtos Relacionados -->
+  <div class="mt-16">
+    <h3 class="text-xl font-bold mb-6">Produtos Relacionados</h3>
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      {# {% for rel in produtos_relacionados %}
+      <a href="{% url 'produto' rel.id %}">
+        <div class="border rounded-lg p-3 hover:shadow-md transition">
+          <div class="relative h-40 mb-3">
+            <img
+              src="{{ rel.imagem.url }}"
+              alt="{{ rel.nome }}"
+              class="w-full h-full object-contain"
+            />
+          </div>
+          <h4 class="font-medium text-sm group-hover:text-green-600">
+            {{ rel.nome|truncatechars:40 }}
+          </h4>
+          <p class="text-green-600 font-bold mt-1">
+            R$ {{ rel.sale_price|default:rel.preco }}
+          </p>
         </div>
+      </a>
+      {% endfor %} #}
     </div>
+  </div>
 </div>
 
 <script>
-    function incrementQuantity() {
-        const input = document.getElementById('quantityInput');
-        input.value = parseInt(input.value) + 1;
-    }
+  function incrementQuantity() {
+    const input = document.getElementById("quantityInput");
+    input.value = parseInt(input.value) + 1;
+  }
 
-    function decrementQuantity() {
-        const input = document.getElementById('quantityInput');
-        const currentValue = parseInt(input.value);
-        if (currentValue > 1) {
-            input.value = currentValue - 1;
-        }
+  function decrementQuantity() {
+    const input = document.getElementById("quantityInput");
+    const currentValue = parseInt(input.value);
+    if (currentValue > 1) {
+      input.value = currentValue - 1;
     }
+  }
 
-    document.getElementById('quantityInput').addEventListener('change', function() {
-        if (parseInt(this.value) < 1 || isNaN(parseInt(this.value))) {
-            this.value = 1;
-        }
+  document
+    .getElementById("quantityInput")
+    .addEventListener("change", function () {
+      if (parseInt(this.value) < 1 || isNaN(parseInt(this.value))) {
+        this.value = 1;
+      }
     });
 </script>
 {% endblock %}
+
+
+
+duplicados = Perfil.objects.values('usuario').annotate(count=models.Count('id')).filter(count__gt=1)
+
+for entry in duplicados:
+    usuario_id = entry['usuario']
+    perfis = Perfil.objects.filter(usuario_id=usuario_id).order_by('id')
+    print(f"Usuário {usuario_id} tem {perfis.count()} perfis.")
+
+    # Mantém o primeiro perfil, apaga os outros
+    perfis_a_deletar = perfis[1:]
+    perfis_a_deletar_count = perfis_a_deletar.count()
+    perfis_a_deletar.delete()
+    print(f"Deletados {perfis_a_deletar_count} perfis duplicados para o usuário {usuario_id}")
