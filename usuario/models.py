@@ -9,3 +9,14 @@ class Perfil(models.Model):
         if self.usuario:
             return self.usuario.username
         return f'Perfil sem usuário (ID: {self.id})'
+
+    def get_badge(self):
+        """Retorna o nome da badge de acordo com os pontos."""
+        if self.pontos <= 100:
+            return 'bronze'
+        elif self.pontos <= 300:
+            return 'prata'
+        elif self.pontos <= 600:
+            return 'ouro'
+        else:
+            return 'diamante'

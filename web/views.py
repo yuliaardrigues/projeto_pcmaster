@@ -17,16 +17,14 @@ def home(request):
 
 def produto(request, pk):
     produto = get_object_or_404(Produto, id=pk)
-    estrelas_cheias = produto.estrelas_cheias()
-    estrelas_meia = produto.estrelas_meia()
-    nota_restante = 5 - estrelas_cheias - estrelas_meia
+    estrelas = produto.get_estrelas()
 
     return render(request, 'products/produto.html', {
         'produto': produto,
-        'estrelas_cheias': estrelas_cheias,
-        'estrelas_meia': estrelas_meia,
-        'nota_restante': nota_restante,
+        'estrelas': estrelas,
     })
+
+
 
 def todos_os_produtos(request):
     produtos = Produto.objects.all()
@@ -65,11 +63,10 @@ def carrinho(request):
         if action == 'increment':
             carrinho[produto_id] += 1
 
-        elif action == 'decrement':
-            if carrinho[produto_id] > 1:
-                carrinho[produto_id] -= 1
-            else:
-                carrinho[produto_id] = 1
+        if action == 'decrement':
+          carrinho[produto_id] = max(carrinho[produto_id] - 1, 0)
+          if carrinho[produto_id] == 0:
+            del carrinho[produto_id]
 
         elif action == 'update':
             try:

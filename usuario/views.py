@@ -5,7 +5,7 @@ from django.contrib.messages import constants
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import authenticate, login as auth_login
-
+from django.contrib.auth.decorators import login_required
 
 
 def cadastro(request):
@@ -114,3 +114,13 @@ def mudar_senha(request):
             return redirect('mudar_senha')
 
     return render(request, 'mudar_senha.html')
+
+@login_required
+def perfil(request):
+    perfil = request.user.perfil  
+    badge = perfil.get_badge()    
+
+    return render(request, 'perfil.html', {
+        'perfil': perfil,
+        'badge': badge,
+    })

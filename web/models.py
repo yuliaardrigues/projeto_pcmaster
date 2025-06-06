@@ -1,7 +1,7 @@
 from django.db import models
-from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
+from math import floor
 class Categoria(models.Model):
     nome = models.CharField(max_length=200)
     imagem = models.ImageField(upload_to='categorias/', null=True, blank=True)
@@ -18,15 +18,24 @@ class Produto(models.Model):
     imagem = models.ImageField(upload_to='produtos_thumb')
     nota = models.DecimalField(max_digits=3, decimal_places=1, null=True, blank=True)
 
+    def get_estrelas(self):
+        return {
+            'estrelas_cheias': self.estrelas_cheias(),
+            'estrelas_meia': self.estrelas_meia(),
+            'nota_restante': self.nota_restante(),
+        }
+
     def estrelas_cheias(self):
-        if self.nota is None:
-            return 0  # Retorna 0 se a nota for None
-        return int(self.nota)
+        return int(floor(self.nota))
 
     def estrelas_meia(self):
-        if self.nota is None:
-            return 0  # Retorna 0 se a nota for None
-        return 1 if self.nota - int(self.nota) >= 0.5 else 0
+        return (self.nota - floor(self.nota)) >= 0.5
+
+    def nota_restante(self):
+        total = 5
+        cheias = self.estrelas_cheias()
+        meia = 1 if self.estrelas_meia() else 0
+        return total - cheias - meia
     # add sale
 
     sale = models.BooleanField(default=False)

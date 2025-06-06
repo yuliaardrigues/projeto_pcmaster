@@ -41,17 +41,14 @@
       </h1>
 
       <!-- Avaliação -->
-      <div class="flex items-center mb-4">
-        <div class="flex text-yellow-400 mr-2">
-          {% for i in "x"|rjust:estrelas_cheias %}
-          <i class="fas fa-star"></i>
-          {% endfor %} {% if estrelas_meia %}
-          <i class="fas fa-star-half-alt"></i>
-          {% endif %} {% for i in "x"|rjust:nota_restante %}
-          <i class="far fa-star"></i>
-          {% endfor %}
-        </div>
-        <span class="text-sm text-gray-600">(Ex: 32 avaliações)</span>
+      <div class="flex text-yellow-400 text-lg mb-4">
+        {% for i in "12345"|slice:":estrelas.estrelas_cheias" %}
+        <i class="fas fa-star"></i>
+        {% endfor %} {% if estrelas.estrelas_meia %}
+        <i class="fas fa-star-half-alt"></i>
+        {% endif %} {% for i in "12345"|slice:":estrelas.nota_restante" %}
+        <i class="far fa-star"></i>
+        {% endfor %}
       </div>
 
       <!-- Preço -->
@@ -171,7 +168,7 @@
   <div class="mt-16">
     <h3 class="text-xl font-bold mb-6">Produtos Relacionados</h3>
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-      {# {% for rel in produtos_relacionados %}
+      {% for rel in produtos_relacionados %}
       <a href="{% url 'produto' rel.id %}">
         <div class="border rounded-lg p-3 hover:shadow-md transition">
           <div class="relative h-40 mb-3">
@@ -217,18 +214,3 @@
     });
 </script>
 {% endblock %}
-
-
-
-duplicados = Perfil.objects.values('usuario').annotate(count=models.Count('id')).filter(count__gt=1)
-
-for entry in duplicados:
-    usuario_id = entry['usuario']
-    perfis = Perfil.objects.filter(usuario_id=usuario_id).order_by('id')
-    print(f"Usuário {usuario_id} tem {perfis.count()} perfis.")
-
-    # Mantém o primeiro perfil, apaga os outros
-    perfis_a_deletar = perfis[1:]
-    perfis_a_deletar_count = perfis_a_deletar.count()
-    perfis_a_deletar.delete()
-    print(f"Deletados {perfis_a_deletar_count} perfis duplicados para o usuário {usuario_id}")
