@@ -21,4 +21,6 @@ urlpatterns = [
 
     path('favoritos/remover/<int:produto_id>/', views.remover_dos_favoritos, name='remover_dos_favoritos'),
     path('carrinho/adicionar/', views.adicionar_ao_carrinho, name='adicionar_ao_carrinho'),
+    path('chatbot/', views.chatbot, name='chatbot'),
+
 ]

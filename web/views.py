@@ -4,6 +4,62 @@ from usuario.models import Perfil
 from django.views.decorators.http import require_http_methods
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+import logging
+import requests
+
+@csrf_exempt
+def chatbot(request):
+    if request.method == "GET":
+        return render(request, "chatbot.html")  # renderiza a página HTML do chatbot
+
+    elif request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            user_message = data.get("message", "")
+
+            # Aqui você integraria seu modelo de linguagem ou lógica de resposta
+            resposta = gerar_resposta_ia(user_message)
+
+
+            return JsonResponse({"reply": resposta})
+        except Exception as e:
+            return JsonResponse({"reply": "Erro ao processar a mensagem."}, status=500)
+
+    else:
+        return JsonResponse({"error": "Método não permitido."}, status=405)
+
+import requests
+
+GROQ_API_KEY = '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'
+
+def gerar_resposta_ia(pergunta):
+    try:
+        response = requests.post(
+            "https://api.groq.com/openai/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {GROQ_API_KEY}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "model": "llama3-8b-8192",  # ou "llama3-70b-8192" se quiser o modelo maior
+                "messages": [
+                    {"role": "system", "content": "Você é um especialista em periféricos de computador."},
+                    {"role": "user", "content": pergunta}
+                ],
+                "temperature": 0.7
+            },
+            timeout=60
+        )
+        data = response.json()
+        return data["choices"][0]["message"]["content"]
+    except Exception as e:
+        print("Erro ao consultar Groq:", e)
+        return "Erro ao acessar o assistente. Tente novamente mais tarde."
+
+
 
 def home(request):
     produtos = Produto.objects.all()

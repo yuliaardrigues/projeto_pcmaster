@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- CSRF Token em meta tag -->
+<meta name="csrf-token" content="{{ csrf_token }}">
+
+<div class="max-w-xl mx-auto mt-10 p-6 bg-white rounded shadow">
+  <h2 class="text-2xl font-semibold mb-4">Assistente de Periféricos 💬</h2>
+
+  <div id="chat-box" class="h-64 overflow-y-auto border rounded p-4 bg-gray-100 mb-4 text-sm"></div>
+
+  <input type="text" id="user-input" placeholder="Pergunte sobre um produto..." class="w-full p-2 border rounded mb-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
+  <button onclick="sendMessage()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded w-full">Enviar</button>
+</div>
+
+<script>
+function getCSRFToken() {
+    return document.querySelector('meta[name="csrf-token"]').getAttribute("content");
+}
+
+function sendMessage() {
+    const input = document.getElementById("user-input");
+    const message = input.value.trim();
+    if (!message) return;
+
+    const chatBox = document.getElementById("chat-box");
+    chatBox.innerHTML += `<div class="text-right mb-2"><strong>Você:</strong> ${message}</div>`;
+    chatBox.innerHTML += `<div class="text-left mb-2" id="loading"><em>Assistente está digitando...</em></div>`;
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    fetch("{% url 'chatbot' %}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": getCSRFToken(),
+        },
+        body: JSON.stringify({ message: message }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById("loading")?.remove();
+        chatBox.innerHTML += `<div class="text-left mb-2"><strong>Bot:</strong> ${data.reply}</div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+        input.value = "";
+    })
+    .catch(error => {
+        document.getElementById("loading")?.remove();
+        chatBox.innerHTML += `<div class="text-left mb-2 text-red-500"><strong>Bot:</strong> Erro ao responder.</div>`;
+        console.error("Erro:", error);
+    });
+}
+</script>
+{% endblock %}
