@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1 class="text-3xl font-bold mb-6">Categorias</h1>
+
+  {% if categorias %}
+    <ul class="space-y-3">
+      {% for categoria in categorias %}
+        <li>
+          <a href="{% url 'produtos_por_categoria' categoria.slug %}" 
+             class="text-green-700 hover:underline text-xl font-semibold">
+            {{ categoria.nome }}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="text-gray-600">Nenhuma categoria cadastrada.</p>
+  {% endif %}
+{% endblock %}

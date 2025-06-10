@@ -260,3 +260,10 @@ def adicionar_ao_carrinho(request):
         request.session['carrinho'] = carrinho
 
     return redirect('carrinho')
+
+def produtos_por_categoria(request, slug):
+    categoria = get_object_or_404(Categoria, slug=slug)
+    produtos = Produto.objects.filter(categoria=categoria)
+    return render(request, 'produtos_por_categoria.html', {'categoria': categoria, 'produtos': produtos}) 
+
+

@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.contrib.messages import constants
@@ -6,6 +6,8 @@ from django.contrib import messages
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import authenticate, login as auth_login
 from django.contrib.auth.decorators import login_required
+
+
 
 
 def cadastro(request):
@@ -31,9 +33,10 @@ def cadastro(request):
         
 
         
-        if User.objects.filter(email=email).exists():
-            messages.error(request,'Esse nome de usuário já existe.')
+        if User.objects.filter(username=username).exists():
+            messages.error(request, 'Esse nome de usuário já existe.')
             return redirect('cadastro')
+
         
         usuario = User.objects.create_user(username=username, email=email, password=password)
         usuario.save()
@@ -124,3 +127,12 @@ def perfil(request):
         'perfil': perfil,
         'badge': badge,
     })
+
+def lista_perfis(request):
+    perfis = Perfil.objects.all()
+    return render(request, 'lista_perfis.html', {'perfis': perfis})
+
+
+
+
+

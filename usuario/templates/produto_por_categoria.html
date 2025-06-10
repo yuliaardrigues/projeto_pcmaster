@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1 class="text-2xl font-bold mb-4">Categoria: {{ categoria.nome }}</h1>
+
+  {% if produtos %}
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    {% for produto in produtos %}
+      <div class="border rounded p-4 bg-white">
+        <h2 class="font-semibold">{{ produto.nome }}</h2>
+        <p>Preço: R$ {{ produto.preco }}</p>
+        <a href="{% url 'detalhes_produto' produto.slug %}" class="text-green-600 hover:underline">Ver detalhes</a>
+      </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p>Nenhum produto encontrado nessa categoria.</p>
+  {% endif %}
+{% endblock %}

@@ -2,21 +2,35 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
 from math import floor
+from django.utils.text import slugify
+
+
 class Categoria(models.Model):
     nome = models.CharField(max_length=200)
+    slug = models.SlugField(blank=False, unique=True)
+ # campo slug para URLs amigáveis
     imagem = models.ImageField(upload_to='categorias/', null=True, blank=True)
 
     def __str__(self):
         return self.nome
 
-    
+    def save(self, *args, **kwargs):
+        # Preenche o slug automaticamente baseado no nome, se não existir
+        if not self.slug:
+            self.slug = slugify(self.nome)
+        super().save(*args, **kwargs)
+
+
 class Produto(models.Model):
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE, default=1)
     nome = models.CharField(max_length=200)
     descricao = models.TextField(max_length=250, default='', blank=True)
     preco = models.DecimalField(default=0, max_digits=6, decimal_places=2)
     imagem = models.ImageField(upload_to='produtos_thumb')
-    nota = models.DecimalField(max_digits=3, decimal_places=1, null=True, blank=True)
+    nota = models.FloatField(null=True, blank=True)  # Corrigi para só um campo nota
+
+    sale = models.BooleanField(default=False)
+    sale_price = models.DecimalField(default=0, max_digits=6, decimal_places=2)
 
     def get_estrelas(self):
         return {
@@ -26,23 +40,20 @@ class Produto(models.Model):
         }
 
     def estrelas_cheias(self):
-        return int(floor(self.nota))
+        if self.nota:
+            return int(floor(self.nota))
+        return 0
 
     def estrelas_meia(self):
-        return (self.nota - floor(self.nota)) >= 0.5
+        if self.nota:
+            return (self.nota - floor(self.nota)) >= 0.5
+        return False
 
     def nota_restante(self):
         total = 5
         cheias = self.estrelas_cheias()
         meia = 1 if self.estrelas_meia() else 0
         return total - cheias - meia
-    # add sale
-
-    sale = models.BooleanField(default=False)
-    sale_price = models.DecimalField(default=0, max_digits=6, decimal_places=2)
-    nota = models.FloatField(null=True, blank=True)
-
-
 
     def __str__(self):
         return self.nome
@@ -52,40 +63,64 @@ class Produto(models.Model):
         if self.preco > 0 and self.sale_price < self.preco:
             return int(((self.preco - self.sale_price) / self.preco) * 100)
         return 0
-    
-#carrinho de compras 
+
+
 class Carrinho(models.Model):
-    estado = models.CharField(choices=[("0", "aberto"), ("1", "Finalizado")], max_length=2)
-    
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    estado = models.CharField(choices=[("0", "aberto"), ("1", "finalizado")], max_length=2)
+
     def __str__(self):
-        return f"{self.usuario.nome} - {self.estado}"   
-#itens dentro do carrinho de compras
+        return f"{self.usuario} - {self.estado}"
+
+
 class CarrinhoProduto(models.Model):
     carrinho = models.ForeignKey(Carrinho, on_delete=models.CASCADE, related_name='produtos')
     produto = models.ForeignKey(Produto, on_delete=models.CASCADE)
     quantidade = models.PositiveIntegerField()
 
     def __str__(self):
-        return f"{self.quantidade} {self.produto.nome}"
-      
-        
+        return f"{self.quantidade} x {self.produto.nome}"
+
+
 class Subcategoria(models.Model):
     nome = models.CharField(max_length=100)
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
-    Produto = models.ForeignKey(Produto, on_delete=models.CASCADE, related_name='subcategorias', default=1)
+    produto = models.ForeignKey(Produto, on_delete=models.CASCADE, related_name='subcategorias', default=1)
 
     def __str__(self):
         return self.nome
-    
 
 
 class Pedido(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    produto = models.ForeignKey('Produto', on_delete=models.CASCADE)
+    produto = models.ForeignKey(Produto, on_delete=models.CASCADE, default=1)
     quantidade = models.IntegerField(default=1)
     valor_total = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.BooleanField(default=False)
-    data_pedido = models.DateTimeField()
+    data_pedido = models.DateTimeField(default=timezone.now)
+
     def __str__(self):
         return f"Pedido de {self.quantidade}x {self.produto.nome} em {self.data_pedido.strftime('%d/%m/%Y %H:%M')}"
 
+def lista_perfis(request):
+    perfis = Perfil.objects.all()
+    return render(request, 'lista_perfis.html', {'perfis': perfis})
+
+from web.models import Categoria
+from django.utils.text import slugify
+
+def generate_unique_slug(instance, slug_field, slug_base):
+    slug = slugify(slug_base)
+    model = instance.__class__
+    unique_slug = slug
+    num = 1
+    while model.objects.filter(**{slug_field: unique_slug}).exclude(pk=instance.pk).exists():
+        unique_slug = f"{slug}-{num}"
+        num += 1
+    return unique_slug
+
+for categoria in Categoria.objects.all():
+    categoria.slug = generate_unique_slug(categoria, 'slug', categoria.nome)
+    categoria.save()
+
+print("Slugs únicos gerados e salvos com sucesso.")

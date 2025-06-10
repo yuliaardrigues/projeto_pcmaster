@@ -76,19 +76,20 @@
       <a href="{% url 'carrinho' %}" title="Carrinho" class="hover:text-gray-300">
         <i class="bi bi-cart"></i>
       </a>
-      {{ request.session.carrinho|length|default:0 }}
+      {{ request.session.carrinho|length|default_if_none:"0" }}
+
     </span>
     <span class="text-sm text-white ml-4">
-  <a href="{% url 'favoritos' %}" title="Favoritos" class="hover:text-gray-300">
-    <i class="bi bi-heart"></i>
-  </a>
-  {{ request.session.favoritos|length|default:0 }}
-</span>
+      <a href="{% url 'favoritos' %}" title="Favoritos" class="hover:text-gray-300">
+        <i class="bi bi-heart"></i>
+      </a>
+      {{ request.session.favoritos|length|default:0 }}
+    </span>
 
     <a href="{% url 'cadastro' %}" title="Perfil" class="hover:text-gray-300">
       <i class="bi bi-person"></i>
     </a>
-      {% if request.user.is_authenticated %}
+    {% if request.user.is_authenticated %}
       <span class="text-sm text-white ml-4">
         Pontos: {{ request.user.perfil.pontos }}
       </span>
@@ -98,35 +99,45 @@
 
 <!-- Navegação inferior -->
 <nav class="bg-white text-gray-800 px-6 py-2 border-b">
-  <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
-    <div class="flex items-center gap-4">
-      <div class="relative group">
-        <div class="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded cursor-pointer hover:bg-gray-200 transition">
-          <span class="text-green-600 font-semibold">Todas as categorias</span>
-          <span class="text-green-600 text-lg">▼</span>
-        </div>
-        <div class="absolute left-0 bg-white shadow-lg mt-2 rounded z-50 flex border w-[280px]
-              opacity-0 invisible group-hover:opacity-100 group-hover:visible
-              transition-all duration-200">
-          <div class="w-full">
-            <ul class="border-r divide-gray-200 list-none">
-              {% for categoria in categorias %}
-              <li class="relative group">
-                <a href="#" class="block px-4 py-2 hover:bg-gray-100">{{ categoria.nome }}</a>
-                <div class="absolute top-0 left-full bg-white w-64 shadow-lg hidden group-hover:block z-10">
-                  <ul class="absolute overflow-auto space-y-2 text-sm text-gray-700 font-medium z-10 list-none">
-                    {% for subcategoria in subcategorias %}
-                    <li class="px-4 py-2 hover:bg-gray-100">
-                      <a href="#">{{ subcategoria.nome }}</a>
-                    </li>
-                    {% endfor %}
-                  </ul>
-                </div>
-              </li>
-              {% endfor %}
-            </ul>
-          </div>
-        </div>
+  <div class="flex justify-between items-center">
+
+    <!-- Dropdown Categorias -->
+    <div class="relative group">
+      <button class="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded cursor-pointer hover:bg-gray-200 transition">
+        <span class="text-green-600 font-semibold">Todas as categorias</span>
+        <span class="text-green-600 text-lg">▼</span>
+      </button>
+
+      <!-- Menu principal -->
+      <div class="absolute left-0 mt-2 bg-white shadow-lg rounded border w-[280px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+        <ul class="divide-y divide-gray-100">
+
+          {% for categoria in categorias %}
+<li class="relative group/cat">
+  <a href="{% url 'produtos_por_categoria' categoria.slug %}" class="flex justify-between items-center px-4 py-2 hover:bg-gray-100">
+    {{ categoria.nome }}
+    <span class="text-gray-400">&rsaquo;</span>
+  </a>
+
+  <!-- Subcategorias -->
+  <ul class="pl-4">
+    {% for subcategoria in categoria.subcategoria_set.all %}
+    <li>
+      {% if subcategoria.slug %}
+      <a href="{% url 'produtos_por_subcategoria' subcategoria.slug %}">
+        {{ subcategoria.nome }}
+      </a>
+      {% else %}
+      {{ subcategoria.nome }}
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+</li>
+{% endfor %}
+
+
+        </ul>
       </div>
     </div>
 
@@ -153,10 +164,9 @@
 
 <!-- Conteúdo da página -->
 <main class="flex-grow px-6">
-    {% block content %}
-    {% endblock %}
+  {% block content %}
+  {% endblock %}
 </main>
-
 
 <!-- Rodapé -->
 <footer class="bg-gray-900 text-white text-sm mt-10 px-6 py-10">
@@ -189,6 +199,7 @@
         <li>Serviço ao cliente</li>
       </ul>
     </div>
+
 
     <div>
       <h4 class="font-bold mb-2">DOWNLOAD APP</h4>
