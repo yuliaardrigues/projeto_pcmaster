@@ -38,7 +38,7 @@ def chatbot(request):
 
 import requests
 
-GROQ_API_KEY = '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'
+GROQ_API_KEY = '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'
 
 def gerar_resposta_ia(pergunta):
     try:
