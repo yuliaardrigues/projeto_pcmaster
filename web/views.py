@@ -49,7 +49,7 @@ def gerar_resposta_ia(pergunta):
                 "Content-Type": "application/json"
             },
             json={
-                "model": "llama3-8b-8192",  # ou "llama3-70b-8192" se quiser o modelo maior
+                "model": "llama3-8b-8192",
                 "messages": [
                     {"role": "system", "content": "Você é um especialista em periféricos de computador."},
                     {"role": "user", "content": pergunta}
@@ -58,11 +58,26 @@ def gerar_resposta_ia(pergunta):
             },
             timeout=60
         )
+
+        # Se não for sucesso, já retorna erro
+        if response.status_code != 200:
+            print("Erro ao consultar Groq:", response.status_code, response.text)
+            return "Erro ao acessar o assistente. Tente novamente mais tarde."
+
         data = response.json()
-        return data["choices"][0]["message"]["content"]
+
+        # Verifica se o campo 'choices' realmente existe na resposta
+        choices = data.get("choices")
+        if not choices or not isinstance(choices, list):
+            print("Resposta inesperada da API:", data)
+            return "Erro: resposta inesperada do assistente."
+
+        return choices[0]["message"]["content"]
+
     except Exception as e:
         print("Erro ao consultar Groq:", e)
         return "Erro ao acessar o assistente. Tente novamente mais tarde."
+
 
 
 
@@ -284,4 +299,33 @@ def produtos_por_categoria(request, categoria_id):
     })
 
 
+def conferir_pontos(request):
+    pontos = 0
+    # Busca pontos do perfil do usuário, criando perfil se não existir
+    try:
+        perfil = request.user.perfil
+    except Perfil.DoesNotExist:
+        perfil = Perfil.objects.create(usuario=request.user)
+    
+    pontos = perfil.pontos
 
+    # Definindo patente e bonificação com base na pontuação
+    if pontos >= 1000:
+        patente = "Diamante"
+        bonificacao = "Frete grátis + 20% de desconto em qualquer produto."
+    elif pontos >= 500:
+        patente = "Ouro"
+        bonificacao = "15% de desconto em headsets e cadeiras gamers."
+    elif pontos >= 100:
+        patente = "Prata"
+        bonificacao = "10% de desconto em teclados e mouses."
+    else:
+        patente = "Bronze"
+        bonificacao = "5% de desconto em acessórios básicos (mousepads, cabos, etc)."
+
+    context = {
+        'pontos': pontos,
+        'patente': patente,
+        'bonificacao': bonificacao,
+    }
+    return render(request, 'conferir_pontos.html', context)

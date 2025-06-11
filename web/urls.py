@@ -1,5 +1,7 @@
 from django.urls import path
 from . import views
+from .views import conferir_pontos
+
 
 
 
@@ -15,4 +17,6 @@ urlpatterns = [
     path('chatbot/', views.chatbot, name='chatbot'),
     path('categoria/<int:categoria_id>/', views.produtos_por_categoria, name='produtos_por_categoria'),
     path('produtos/', views.todos_os_produtos, name='produtos'),
+    path('conferir_pontos/', views.conferir_pontos, name='conferir_pontos'),
+
 ]
