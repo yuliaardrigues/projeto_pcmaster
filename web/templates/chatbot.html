@@ -2,16 +2,31 @@
 {% load static %}
 
 {% block content %}
-<!-- CSRF Token em meta tag -->
 <meta name="csrf-token" content="{{ csrf_token }}">
 
-<div class="max-w-xl mx-auto mt-10 p-6 bg-white rounded shadow">
-  <h2 class="text-2xl font-semibold mb-4">Assistente de Periféricos 💬</h2>
+<div class="max-w-xl mx-auto mt-10 p-6 bg-white rounded-2xl shadow-xl border">
+  <h2 class="text-3xl font-bold mb-6 text-center text-gray-800">💬 Assistente de Periféricos</h2>
 
-  <div id="chat-box" class="h-64 overflow-y-auto border rounded p-4 bg-gray-100 mb-4 text-sm"></div>
+  <!-- Chat box -->
+  <div id="chat-box" class="h-80 overflow-y-auto border rounded-lg p-4 bg-gray-50 mb-4 text-sm space-y-3">
+    <div class="text-center text-gray-400 text-xs">Inicie a conversa perguntando sobre um produto!</div>
+  </div>
 
-  <input type="text" id="user-input" placeholder="Pergunte sobre um produto..." class="w-full p-2 border rounded mb-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
-  <button onclick="sendMessage()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded w-full">Enviar</button>
+  <!-- Input -->
+  <div class="flex gap-2">
+    <input
+      type="text"
+      id="user-input"
+      placeholder="Digite sua pergunta..."
+      class="flex-1 p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+    />
+    <button
+      onclick="sendMessage()"
+      class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow transition"
+    >
+      Enviar
+    </button>
+  </div>
 </div>
 
 <script>
@@ -25,8 +40,14 @@ function sendMessage() {
     if (!message) return;
 
     const chatBox = document.getElementById("chat-box");
-    chatBox.innerHTML += `<div class="text-right mb-2"><strong>Você:</strong> ${message}</div>`;
-    chatBox.innerHTML += `<div class="text-left mb-2" id="loading"><em>Assistente está digitando...</em></div>`;
+    chatBox.innerHTML += `
+      <div class="text-right">
+        <div class="inline-block bg-blue-500 text-white px-3 py-2 rounded-lg max-w-xs break-words">${message}</div>
+      </div>
+    `;
+    chatBox.innerHTML += `
+      <div id="loading" class="text-left text-gray-400 italic text-sm">Assistente está digitando...</div>
+    `;
     chatBox.scrollTop = chatBox.scrollHeight;
 
     fetch("{% url 'chatbot' %}", {
@@ -40,13 +61,19 @@ function sendMessage() {
     .then(response => response.json())
     .then(data => {
         document.getElementById("loading")?.remove();
-        chatBox.innerHTML += `<div class="text-left mb-2"><strong>Bot:</strong> ${data.reply}</div>`;
+        chatBox.innerHTML += `
+          <div class="text-left">
+            <div class="inline-block bg-gray-200 text-gray-800 px-3 py-2 rounded-lg max-w-xs break-words">${data.reply}</div>
+          </div>
+        `;
         chatBox.scrollTop = chatBox.scrollHeight;
         input.value = "";
     })
     .catch(error => {
         document.getElementById("loading")?.remove();
-        chatBox.innerHTML += `<div class="text-left mb-2 text-red-500"><strong>Bot:</strong> Erro ao responder.</div>`;
+        chatBox.innerHTML += `
+          <div class="text-left text-red-500"><strong>Erro:</strong> Não foi possível obter resposta.</div>
+        `;
         console.error("Erro:", error);
     });
 }

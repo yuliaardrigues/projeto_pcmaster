@@ -6,6 +6,8 @@ from django.contrib import messages
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import authenticate, login as auth_login
 from django.contrib.auth.decorators import login_required
+from usuario.models import Produto
+
 
 
 
@@ -133,6 +135,14 @@ def lista_perfis(request):
     return render(request, 'lista_perfis.html', {'perfis': perfis})
 
 
+def produtos(request):
+    q = request.GET.get('q', '')
+    if q:
+        produtos = Produto.objects.filter(nome__icontains=q)
+    else:
+        produtos = Produto.objects.all()
+    print(f"Busca: '{q}' - Produtos encontrados: {produtos.count()}")
+    return render(request, 'buscar_produto.html', {'produtos': produtos, 'q': q})
 
 
 

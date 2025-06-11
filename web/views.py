@@ -7,6 +7,8 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
+from decimal import Decimal
+from django.http import JsonResponse
 import logging
 import requests
 
@@ -65,11 +67,20 @@ def home(request):
     produtos = Produto.objects.all()
     categorias = Categoria.objects.all()
     subcategorias = Subcategoria.objects.all()
+
+    # Produto para o banner (pode alterar o filtro se quiser outro critério)
+    try:
+        produto_banner = Produto.objects.get(nome__icontains="Xbox")
+    except Produto.DoesNotExist:
+        produto_banner = None
+
     return render(request, 'home/home.html', {
         'produtos': produtos,
         'categorias': categorias,
-        'subcategorias': subcategorias
+        'subcategorias': subcategorias,
+        'produto_banner': produto_banner,
     })
+
 
 def produto(request, pk):
     produto = get_object_or_404(Produto, id=pk)
@@ -269,5 +280,14 @@ def produtos_por_categoria(request, categoria_id):
         'produtos': produtos
     })
 
+
+class DecimalEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Decimal):
+            return float(obj)
+        return super(DecimalEncoder, self).default(obj)
+
+# Uso
+        return JsonResponse(data, encoder=DecimalEncoder)
 
 

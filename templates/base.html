@@ -123,20 +123,19 @@
         <a href="{% url 'home' %}">PC MASTER</a>
       </div>
 
-      <div class="flex-1 w-full max-w-2xl">
-        <div class="relative">
-          <input
-            type="text"
-            placeholder="Buscar"
-            class="w-full px-4 py-2 rounded text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-400"
-          />
-          <button
-            class="absolute right-2 top-1/2 -translate-y-1/2 text-green-600"
-          >
-            🔍
-          </button>
-        </div>
-      </div>
+      <form method="GET" action="{% url 'produtos' %}" class="relative">
+  <input
+    name="q"
+    type="text"
+    placeholder="Buscar"
+    class="w-full px-4 py-2 rounded text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-400"
+    value="{{ request.GET.q|default:'' }}"
+  />
+  <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 text-green-600">
+    🔍
+  </button>
+</form>
+
 
       <div class="flex items-center gap-4 text-xl">
         <span class="text-sm text-white">
@@ -301,6 +300,16 @@
 
     <!-- Conteúdo da página -->
     <main class="flex-grow px-6">{% block content %} {% endblock %}</main>
+
+    <!-- Botão Flutuante do Assistente -->
+<a
+  href="{% url 'chatbot' %}"
+  class="fixed bottom-4 right-4 bg-green-600 hover:bg-green-700 text-white p-3 rounded-full shadow-lg transition"
+  aria-label="Assistente de Periféricos"
+>
+  <i class="fas fa-robot text-xl"></i>
+</a>
+
 
     <!-- Rodapé -->
     <footer class="bg-gray-900 text-white text-sm mt-10 px-6 py-10">

@@ -1,42 +1,34 @@
 {% extends 'base.html' %} {% load static %} {% block content %}
 
 <!-- Banner Promocional Xbox -->
-<section
-  class="bg-gray-100 rounded-lg m-4 p-6 flex flex-col md:flex-row items-center justify-between"
->
+{% if produto_banner %}
+<section class="bg-gray-100 rounded-lg m-4 p-6 flex flex-col md:flex-row items-center justify-between">
   <div class="max-w-md text-center md:text-left">
     <p class="text-sm text-blue-500 font-semibold uppercase">
       O MELHOR PREÇO DO MERCADO
     </p>
-    <h2 class="text-3xl font-bold text-gray-800 my-2">Xbox Consoles</h2>
-    <p class="text-gray-600 mb-4">O seu jogo com 50% de desconto.</p>
-    <button
-      class="bg-green-600 text-white font-bold py-2 px-6 rounded hover:bg-green-700 transition flex items-center gap-2"
-    >
-      COMPRAR AGORA <i class="fas fa-arrow-right"></i>
-    </button>
+    <h2 class="text-3xl font-bold text-gray-800 my-2">{{ produto_banner.nome }}</h2>
+    <p class="text-gray-600 mb-4">{{ produto_banner.descricao }}</p>
+    <a href="{% url 'produto' produto_banner.id %}">
+      <button class="bg-green-600 text-white font-bold py-2 px-6 rounded hover:bg-green-700 transition flex items-center gap-2">
+        COMPRAR AGORA <i class="fas fa-arrow-right"></i>
+      </button>
+    </a>
   </div>
 
   <div class="relative mt-6 md:mt-0">
     <img
-      src="https://i.imgur.com/EaQO4Wf.png"
-      alt="Xbox Console"
+      src="{{ produto_banner.imagem.url }}"
+      alt="{{ produto_banner.nome }}"
       class="w-[280px] md:w-[320px]"
     />
-    <div
-      class="absolute top-0 right-0 bg-green-500 text-white text-lg font-semibold rounded-full px-4 py-1 shadow-lg"
-    >
-      R$1299
+    <div class="absolute top-0 right-0 bg-green-500 text-white text-lg font-semibold rounded-full px-4 py-1 shadow-lg">
+      R${{ produto_banner.preco }}
     </div>
   </div>
 </section>
+{% endif %}
 
-<!-- Indicadores -->
-<div class="flex justify-center mt-2">
-  <span class="h-2 w-2 bg-black rounded-full mx-1"></span>
-  <span class="h-2 w-2 bg-gray-400 rounded-full mx-1"></span>
-  <span class="h-2 w-2 bg-gray-400 rounded-full mx-1"></span>
-</div>
 
 <!-- Benefícios -->
 <section

@@ -7,22 +7,35 @@ from django.utils.text import slugify
 
 class Categoria(models.Model):
     nome = models.CharField(max_length=100)
+    # slug = models.SlugField(unique=True, blank=True)  # pode ficar em branco para gerar automaticamente
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.nome)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.nome
 
+class Subcategoria(models.Model):
+    nome = models.CharField(max_length=100)
+    categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.nome
+
+
 class Produto(models.Model):
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE, default=1)
+    subcategoria = models.ForeignKey(Subcategoria, on_delete=models.CASCADE, related_name='produtos')
     nome = models.CharField(max_length=200)
     descricao = models.TextField(max_length=250, default='', blank=True)
     preco = models.DecimalField(default=0, max_digits=6, decimal_places=2)
     imagem = models.ImageField(upload_to='produtos_thumb')
-    nota = models.FloatField(null=True, blank=True)  
+    nota = models.FloatField(null=True, blank=True)
     sale = models.BooleanField(default=False)
     sale_price = models.DecimalField(default=0, max_digits=6, decimal_places=2)
-    Subcategoria = models.ForeignKey('Subcategoria', on_delete=models.CASCADE, null=True, blank=True)
-    
-    
+
     def get_estrelas(self):
         return {
             'estrelas_cheias': self.estrelas_cheias(),
@@ -48,7 +61,7 @@ class Produto(models.Model):
 
     def __str__(self):
         return self.nome
-    
+
     @property
     def desconto_percentual(self):
         if self.preco > 0 and self.sale_price < self.preco:
@@ -73,16 +86,6 @@ class CarrinhoProduto(models.Model):
         return f"{self.quantidade} x {self.produto.nome}"
 
 
-class Subcategoria(models.Model):
-    nome = models.CharField(max_length=100)
-    categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.nome
-
-
-
-
 class Pedido(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     produto = models.ForeignKey(Produto, on_delete=models.CASCADE, default=1)
@@ -93,8 +96,3 @@ class Pedido(models.Model):
 
     def __str__(self):
         return f"Pedido de {self.quantidade}x {self.produto.nome} em {self.data_pedido.strftime('%d/%m/%Y %H:%M')}"
-
-
-
-    
-    
