@@ -42,6 +42,23 @@ GROQ_API_KEY = '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'
 
 def gerar_resposta_ia(pergunta):
     try:
+        produtos = Produto.objects.all()
+        contexto_produtos = "Aqui estão os produtos disponíveis:\n\n"
+        for p in produtos:
+            contexto_produtos += (
+                f"Nome: {p.nome}\n"
+                f"Descrição: {p.descricao}\n"
+                f"Preço: R${p.preco:.2f}\n"
+                f"Em promoção: {'Sim, por R$'+str(p.sale_price) if p.sale else 'Não'}\n"
+                f"Nota: {p.nota}\n\n"
+            )
+
+        prompt_sistema = (
+            "Você é um especialista em produtos de informática. "
+            "Responda com base apenas nas informações abaixo:\n\n" +
+            contexto_produtos
+        )
+
         response = requests.post(
             "https://api.groq.com/openai/v1/chat/completions",
             headers={
@@ -51,7 +68,7 @@ def gerar_resposta_ia(pergunta):
             json={
                 "model": "llama3-8b-8192",
                 "messages": [
-                    {"role": "system", "content": "Você é um especialista em periféricos de computador."},
+                    {"role": "system", "content": prompt_sistema},
                     {"role": "user", "content": pergunta}
                 ],
                 "temperature": 0.7
@@ -59,14 +76,11 @@ def gerar_resposta_ia(pergunta):
             timeout=60
         )
 
-        # Se não for sucesso, já retorna erro
         if response.status_code != 200:
             print("Erro ao consultar Groq:", response.status_code, response.text)
             return "Erro ao acessar o assistente. Tente novamente mais tarde."
 
         data = response.json()
-
-        # Verifica se o campo 'choices' realmente existe na resposta
         choices = data.get("choices")
         if not choices or not isinstance(choices, list):
             print("Resposta inesperada da API:", data)
@@ -77,9 +91,6 @@ def gerar_resposta_ia(pergunta):
     except Exception as e:
         print("Erro ao consultar Groq:", e)
         return "Erro ao acessar o assistente. Tente novamente mais tarde."
-
-
-
 
 def home(request):
     produtos = Produto.objects.all()
