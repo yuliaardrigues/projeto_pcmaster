@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1 class="text-2xl font-bold mb-4">Produtos da categoria: {{ categoria.nome }}</h1>
+
+  <p class="mb-2">Total: {{ produtos|length }} produto(s)</p>
+
+  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    {% for produto in produtos %}
+      <div class="bg-white shadow p-4 rounded">
+        <h2 class="font-semibold">{{ produto.nome }}</h2>
+        <p class="text-green-600 font-bold">R$ {{ produto.preco }}</p>
+        <p class="text-sm text-gray-600">{{ produto.descricao|truncatewords:15 }}</p>
+      </div>
+    {% empty %}
+      <p class="col-span-full text-red-500">Nenhum produto encontrado.</p>
+    {% endfor %}
+  </div>
+{% endblock %}

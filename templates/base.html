@@ -1,215 +1,336 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PC Master</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PC Master</title>
 
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+      defer
+    ></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
 
-  {% block head %}{% endblock %}
-</head>
-<body class="bg-gray-100 min-h-screen flex flex-col">
+    {% block head %}{% endblock %}
+  </head>
+  <body class="bg-gray-100 min-h-screen flex flex-col">
+    <!-- Barra superior -->
+    <div
+      class="bg-green-700 text-white text-sm px-4 py-1 flex justify-between items-center"
+    >
+      <span class="text-base">Bem-vindo à PC MASTER!</span>
+      <div class="flex items-center gap-6 text-base">
+        <div class="flex items-center gap-2 text-white">
+          <span class="hover:underline cursor-pointer">Siga-nos</span>
+          <i class="fab fa-twitter hover:text-gray-300 cursor-pointer"></i>
+          <i class="fab fa-facebook-f hover:text-gray-300 cursor-pointer"></i>
+          <i class="fab fa-pinterest-p hover:text-gray-300 cursor-pointer"></i>
+          <i class="fab fa-youtube hover:text-gray-300 cursor-pointer"></i>
+          <i class="fab fa-instagram hover:text-gray-300 cursor-pointer"></i>
+        </div>
 
-<!-- Barra superior -->
-<div class="bg-green-700 text-white text-sm px-4 py-1 flex justify-between items-center">
-  <span class="text-base">Bem-vindo à PC MASTER!</span>
-  <div class="flex items-center gap-6 text-base">
-    <div class="flex items-center gap-2 text-white">
-      <span class="hover:underline cursor-pointer">Siga-nos</span>
-      <i class="fab fa-twitter hover:text-gray-300 cursor-pointer"></i>
-      <i class="fab fa-facebook-f hover:text-gray-300 cursor-pointer"></i>
-      <i class="fab fa-pinterest-p hover:text-gray-300 cursor-pointer"></i>
-      <i class="fab fa-youtube hover:text-gray-300 cursor-pointer"></i>
-      <i class="fab fa-instagram hover:text-gray-300 cursor-pointer"></i>
-    </div>
+        <div
+          class="flex items-center gap-4 relative"
+          x-data="{ openLang: false, openCurr: false }"
+        >
+          <div class="relative">
+            <button
+              @click="openLang = !openLang; openCurr = false"
+              class="flex items-center gap-1 hover:underline cursor-pointer"
+            >
+              <span x-text="localStorage.getItem('lang') || 'PT'">PT</span>
+              <i class="fas fa-chevron-down text-sm"></i>
+            </button>
+            <ul
+              x-show="openLang"
+              @click.outside="openLang = false"
+              class="absolute bg-white text-black mt-1 rounded shadow z-50 w-20"
+            >
+              <li>
+                <button
+                  @click="localStorage.setItem('lang', 'PT'); openLang = false; location.reload()"
+                  class="w-full text-left px-3 py-1 hover:bg-gray-100"
+                >
+                  PT
+                </button>
+              </li>
+              <li>
+                <button
+                  @click="localStorage.setItem('lang', 'EN'); openLang = false; location.reload()"
+                  class="w-full text-left px-3 py-1 hover:bg-gray-100"
+                >
+                  EN
+                </button>
+              </li>
+            </ul>
+          </div>
 
-    <div class="flex items-center gap-4 relative" x-data="{ openLang: false, openCurr: false }">
-      <div class="relative">
-        <button @click="openLang = !openLang; openCurr = false"
-                class="flex items-center gap-1 hover:underline cursor-pointer">
-          <span x-text="localStorage.getItem('lang') || 'PT'">PT</span>
-          <i class="fas fa-chevron-down text-sm"></i>
-        </button>
-        <ul x-show="openLang" @click.outside="openLang = false"
-            class="absolute bg-white text-black mt-1 rounded shadow z-50 w-20">
-          <li><button @click="localStorage.setItem('lang', 'PT'); openLang = false; location.reload()" class="w-full text-left px-3 py-1 hover:bg-gray-100">PT</button></li>
-          <li><button @click="localStorage.setItem('lang', 'EN'); openLang = false; location.reload()" class="w-full text-left px-3 py-1 hover:bg-gray-100">EN</button></li>
-        </ul>
-      </div>
-
-      <div class="relative">
-        <button @click="openCurr = !openCurr; openLang = false"
-                class="flex items-center gap-1 hover:underline cursor-pointer">
-          <span x-text="localStorage.getItem('currency') || 'BRL'">BRL</span>
-          <i class="fas fa-chevron-down text-sm"></i>
-        </button>
-        <ul x-show="openCurr" @click.outside="openCurr = false"
-            class="absolute bg-white text-black mt-1 rounded shadow z-50 w-20">
-          <li><button @click="localStorage.setItem('currency', 'BRL'); openCurr = false; location.reload()" class="w-full text-left px-3 py-1 hover:bg-gray-100">BRL</button></li>
-          <li><button @click="localStorage.setItem('currency', 'USD'); openCurr = false; location.reload()" class="w-full text-left px-3 py-1 hover:bg-gray-100">USD</button></li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Cabeçalho principal -->
-<header class="bg-green-600 text-white px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
-  <div class="flex items-center text-2xl font-bold">
-    <div class="bg-white text-green-600 w-8 h-8 rounded-full flex items-center justify-center mr-2">O</div>
-    <a href="{% url 'home' %}">PC MASTER</a>
-  </div>
-
-  <div class="flex-1 w-full max-w-2xl">
-    <div class="relative">
-      <input type="text" placeholder="Buscar" class="w-full px-4 py-2 rounded text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-400">
-      <button class="absolute right-2 top-1/2 -translate-y-1/2 text-green-600">🔍</button>
-    </div>
-  </div>
-
-  <div class="flex items-center gap-4 text-xl">
-    <span class="text-sm text-white">
-      <a href="{% url 'carrinho' %}" title="Carrinho" class="hover:text-gray-300">
-        <i class="bi bi-cart"></i>
-      </a>
-      {{ request.session.carrinho|length|default_if_none:"0" }}
-
-    </span>
-    <span class="text-sm text-white ml-4">
-      <a href="{% url 'favoritos' %}" title="Favoritos" class="hover:text-gray-300">
-        <i class="bi bi-heart"></i>
-      </a>
-      {{ request.session.favoritos|length|default:0 }}
-    </span>
-
-    <a href="{% url 'cadastro' %}" title="Perfil" class="hover:text-gray-300">
-      <i class="bi bi-person"></i>
-    </a>
-    {% if request.user.is_authenticated %}
-      <span class="text-sm text-white ml-4">
-        Pontos: {{ request.user.perfil.pontos }}
-      </span>
-    {% endif %}
-  </div>
-</header>
-
-<!-- Navegação inferior -->
-<nav class="bg-white text-gray-800 px-6 py-2 border-b">
-  <div class="flex justify-between items-center">
-
-    <!-- Dropdown Categorias -->
-    <div class="relative group">
-      <button class="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded cursor-pointer hover:bg-gray-200 transition">
-        <span class="text-green-600 font-semibold">Todas as categorias</span>
-        <span class="text-green-600 text-lg">▼</span>
-      </button>
-
-      <!-- Menu principal -->
-      <div class="absolute left-0 mt-2 bg-white shadow-lg rounded border w-[280px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-        <ul class="divide-y divide-gray-100">
-
-          {% for categoria in categorias %}
-<li class="relative group/cat">
-  <a href="{% url 'produtos_por_categoria' categoria.slug %}" class="flex justify-between items-center px-4 py-2 hover:bg-gray-100">
-    {{ categoria.nome }}
-    <span class="text-gray-400">&rsaquo;</span>
-  </a>
-
-  <!-- Subcategorias -->
-  <ul class="pl-4">
-    {% for subcategoria in categoria.subcategoria_set.all %}
-    <li>
-      {% if subcategoria.slug %}
-      <a href="{% url 'produtos_por_subcategoria' subcategoria.slug %}">
-        {{ subcategoria.nome }}
-      </a>
-      {% else %}
-      {{ subcategoria.nome }}
-      {% endif %}
-    </li>
-    {% endfor %}
-  </ul>
-</li>
-{% endfor %}
-
-
-        </ul>
+          <div class="relative">
+            <button
+              @click="openCurr = !openCurr; openLang = false"
+              class="flex items-center gap-1 hover:underline cursor-pointer"
+            >
+              <span x-text="localStorage.getItem('currency') || 'BRL'"
+                >BRL</span
+              >
+              <i class="fas fa-chevron-down text-sm"></i>
+            </button>
+            <ul
+              x-show="openCurr"
+              @click.outside="openCurr = false"
+              class="absolute bg-white text-black mt-1 rounded shadow z-50 w-20"
+            >
+              <li>
+                <button
+                  @click="localStorage.setItem('currency', 'BRL'); openCurr = false; location.reload()"
+                  class="w-full text-left px-3 py-1 hover:bg-gray-100"
+                >
+                  BRL
+                </button>
+              </li>
+              <li>
+                <button
+                  @click="localStorage.setItem('currency', 'USD'); openCurr = false; location.reload()"
+                  class="w-full text-left px-3 py-1 hover:bg-gray-100"
+                >
+                  USD
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
 
-    <a href="" class="flex items-center gap-1 text-gray-700 hover:text-green-600 transition">
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c1.657 0 3-1.343 3-3S13.657 5 12 5s-3 1.343-3 3 1.343 3 3 3z" />
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.341A8 8 0 104.57 15.34L12 21l7.428-5.659z" />
-      </svg>
-      Rastrear Pedido
-    </a>
-
-    <a href="{% url 'chatbot' %}" class="flex items-center gap-1 text-gray-700 hover:text-green-600 transition">
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636a9 9 0 00-12.728 0M3 10v2a9 9 0 009 9h0a9 9 0 009-9v-2M8 14h.01M16 14h.01" />
-      </svg>
-      Atendimento ao Cliente
-    </a>
-
-    <div class="font-semibold text-green-700 flex items-center gap-1">
-      <span>4002-8922</span>
-    </div>
-  </div>
-</nav>
-
-<!-- Conteúdo da página -->
-<main class="flex-grow px-6">
-  {% block content %}
-  {% endblock %}
-</main>
-
-<!-- Rodapé -->
-<footer class="bg-gray-900 text-white text-sm mt-10 px-6 py-10">
-  <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-    <div>
-      <h4 class="font-bold mb-2">PC MASTER</h4>
-      <p>Atendimento e Suporte</p>
-      <p class="my-1">(88) 4002-8922</p>
-      <p>123 Centro Universitário Paraíso, Juazeiro, CE</p>
-      <p class="mt-1">info@pcmaster.com</p>
-    </div>
-
-    <div>
-      <h4 class="font-bold mb-2">PRINCIPAIS CATEGORIAS</h4>
-      <ul class="space-y-1">
-        <li>Computador e Laptop</li>
-        <li>Smartphone</li>
-        <li>Acessórios</li>
-        <li>TV & Casa</li>
-        <li class="text-green-500">Buscar em todas as categorias →</li>
-      </ul>
-    </div>
-
-    <div>
-      <h4 class="font-bold mb-2">LINKS RÁPIDOS</h4>
-      <ul class="space-y-1">
-        <li>Comprar um produto</li>
-        <li>Lista de desejos</li>
-        <li>Rastreamento de pedidos</li>
-        <li>Serviço ao cliente</li>
-      </ul>
-    </div>
-
-
-    <div>
-      <h4 class="font-bold mb-2">DOWNLOAD APP</h4>
-      <div class="flex flex-col space-y-2">
-        <img src="https://cdn.worldvectorlogo.com/logos/google-play-badge.svg" class="h-10" />
-        <img src="https://cdn.worldvectorlogo.com/logos/download-on-the-app-store-apple.svg" class="h-10" />
+    <!-- Cabeçalho principal -->
+    <header
+      class="bg-green-600 text-white px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-4"
+    >
+      <div class="flex items-center text-2xl font-bold">
+        <div
+          class="bg-white text-green-600 w-8 h-8 rounded-full flex items-center justify-center mr-2"
+        >
+          O
+        </div>
+        <a href="{% url 'home' %}">PC MASTER</a>
       </div>
-    </div>
-  </div>
-</footer>
 
-</body>
+      <div class="flex-1 w-full max-w-2xl">
+        <div class="relative">
+          <input
+            type="text"
+            placeholder="Buscar"
+            class="w-full px-4 py-2 rounded text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-400"
+          />
+          <button
+            class="absolute right-2 top-1/2 -translate-y-1/2 text-green-600"
+          >
+            🔍
+          </button>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-4 text-xl">
+        <span class="text-sm text-white">
+          <a
+            href="{% url 'carrinho' %}"
+            title="Carrinho"
+            class="hover:text-gray-300"
+            ><i class="bi bi-cart"></i
+          ></a>
+          {{ request.session.carrinho|length|default_if_none:"0" }}
+        </span>
+        <span class="text-sm text-white ml-4">
+          <a
+            href="{% url 'favoritos' %}"
+            title="Favoritos"
+            class="hover:text-gray-300"
+            ><i class="bi bi-heart"></i
+          ></a>
+          {{ request.session.favoritos|length|default:0 }}
+        </span>
+        <a
+          href="{% url 'cadastro' %}"
+          title="Perfil"
+          class="hover:text-gray-300"
+          ><i class="bi bi-person"></i
+        ></a>
+        {% if request.user.is_authenticated %}
+        <span class="text-sm text-white ml-4"
+          >Pontos: {{ request.user.perfil.pontos }}</span
+        >
+        {% endif %}
+      </div>
+    </header>
+
+    <!-- Navegação inferior -->
+    <nav class="bg-white text-gray-800 px-6 py-2 border-b">
+      <div class="flex justify-between items-center">
+        <!-- Dropdown Categorias -->
+        <div class="relative group">
+          <button
+            class="bg-gray-100 text-green-700 px-4 py-2 rounded-t-md font-semibold flex items-center gap-1"
+          >
+            Todas as categorias
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fill-rule="evenodd"
+                d="M5.23 7.21a.75.75 0 011.06.02L10 11.293l3.71-4.06a.75.75 0 011.08 1.04l-4.25 4.657a.75.75 0 01-1.08 0L5.25 8.27a.75.75 0 01-.02-1.06z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </button>
+
+          <!-- Dropdown -->
+          <div
+            class="absolute left-0 top-full mt-1 w-64 bg-white shadow-lg rounded-b-md border z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200"
+          >
+            <!-- Dentro do dropdown de categorias, subcategorias agora direcionam para a view de produtos -->
+            <ul class="divide-y divide-gray-100">
+              {% for categoria in categorias %}
+              <li class="relative group/categoria">
+                <a
+                  href="{% url 'produtos_por_categoria' categoria.id %}"
+                  class="flex justify-between items-center px-4 py-2 hover:bg-gray-100"
+                >
+                  {{ categoria.nome }} {% if categoria.subcategoria_set.all %}
+                  <span class="text-gray-400 text-sm">&rsaquo;</span>
+                  {% endif %}
+                </a>
+
+                {% if categoria.subcategoria_set.all %}
+                <ul
+                  class="absolute top-0 left-full w-64 bg-white border shadow-md opacity-0 invisible group-hover/categoria:opacity-100 group-hover/categoria:visible transition-all duration-200"
+                >
+                  {% for sub in categoria.subcategoria_set.all %}
+                  <li>
+                    <a
+                      href="{% url 'produtos_por_categoria' sub.categoria.id %}"
+                      class="block px-4 py-2 hover:bg-gray-100 text-sm"
+                    >
+                      {{ sub.nome }}
+                    </a>
+                  </li>
+                  {% endfor %}
+                </ul>
+                {% endif %}
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+
+        <a
+          href="#"
+          class="flex items-center gap-1 text-gray-700 hover:text-green-600 transition"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-5 h-5 text-green-600"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 11c1.657 0 3-1.343 3-3S13.657 5 12 5s-3 1.343-3 3 1.343 3 3 3z"
+            />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19.428 15.341A8 8 0 104.57 15.34L12 21l7.428-5.659z"
+            />
+          </svg>
+          Rastrear Pedido
+        </a>
+
+        <a
+          href="{% url 'chatbot' %}"
+          class="flex items-center gap-1 text-gray-700 hover:text-green-600 transition"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-5 h-5 text-green-600"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M18.364 5.636a9 9 0 00-12.728 0M3 10v2a9 9 0 009 9h0a9 9 0 009-9v-2M8 14h.01M16 14h.01"
+            />
+          </svg>
+          Atendimento ao Cliente
+        </a>
+
+        <div class="font-semibold text-green-700 flex items-center gap-1">
+          <span>4002-8922</span>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Conteúdo da página -->
+    <main class="flex-grow px-6">{% block content %} {% endblock %}</main>
+
+    <!-- Rodapé -->
+    <footer class="bg-gray-900 text-white text-sm mt-10 px-6 py-10">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div>
+          <h4 class="font-bold mb-2">PC MASTER</h4>
+          <p>Atendimento e Suporte</p>
+          <p class="my-1">(88) 4002-8922</p>
+          <p>123 Centro Universitário Paraíso, Juazeiro, CE</p>
+          <p class="mt-1">info@pcmaster.com</p>
+        </div>
+
+        <div>
+          <h4 class="font-bold mb-2">PRINCIPAIS CATEGORIAS</h4>
+          <ul class="space-y-1">
+            <li>Computador e Laptop</li>
+            <li>Smartphone</li>
+            <li>Acessórios</li>
+            <li>TV & Casa</li>
+            <li class="text-green-500">Buscar em todas as categorias →</li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold mb-2">LINKS RÁPIDOS</h4>
+          <ul class="space-y-1">
+            <li>Comprar um produto</li>
+            <li>Lista de desejos</li>
+            <li>Rastreamento de pedidos</li>
+            <li>Serviço ao cliente</li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold mb-2">DOWNLOAD APP</h4>
+          <div class="flex flex-col space-y-2">
+            <img
+              src="https://cdn.worldvectorlogo.com/logos/google-play-badge.svg"
+              class="h-10"
+            />
+            <img
+              src="https://cdn.worldvectorlogo.com/logos/download-on-the-app-store-apple.svg"
+              class="h-10"
+            />
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
 </html>

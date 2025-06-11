@@ -261,9 +261,13 @@ def adicionar_ao_carrinho(request):
 
     return redirect('carrinho')
 
-def produtos_por_categoria(request, slug):
-    categoria = get_object_or_404(Categoria, slug=slug)
+def produtos_por_categoria(request, categoria_id):
+    categoria = get_object_or_404(Categoria, id=categoria_id)
     produtos = Produto.objects.filter(categoria=categoria)
-    return render(request, 'produtos_por_categoria.html', {'categoria': categoria, 'produtos': produtos}) 
+    return render(request, 'web/produtos_por_categoria.html', {
+        'categoria': categoria,
+        'produtos': produtos
+    })
+
 
 

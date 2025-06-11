@@ -6,20 +6,10 @@ from django.utils.text import slugify
 
 
 class Categoria(models.Model):
-    nome = models.CharField(max_length=200)
-    slug = models.SlugField(blank=False, unique=True)
- # campo slug para URLs amigáveis
-    imagem = models.ImageField(upload_to='categorias/', null=True, blank=True)
+    nome = models.CharField(max_length=100)
 
     def __str__(self):
         return self.nome
-
-    def save(self, *args, **kwargs):
-        # Preenche o slug automaticamente baseado no nome, se não existir
-        if not self.slug:
-            self.slug = slugify(self.nome)
-        super().save(*args, **kwargs)
-
 
 class Produto(models.Model):
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE, default=1)
@@ -27,11 +17,12 @@ class Produto(models.Model):
     descricao = models.TextField(max_length=250, default='', blank=True)
     preco = models.DecimalField(default=0, max_digits=6, decimal_places=2)
     imagem = models.ImageField(upload_to='produtos_thumb')
-    nota = models.FloatField(null=True, blank=True)  # Corrigi para só um campo nota
-
+    nota = models.FloatField(null=True, blank=True)  
     sale = models.BooleanField(default=False)
     sale_price = models.DecimalField(default=0, max_digits=6, decimal_places=2)
-
+    Subcategoria = models.ForeignKey('Subcategoria', on_delete=models.CASCADE, null=True, blank=True)
+    
+    
     def get_estrelas(self):
         return {
             'estrelas_cheias': self.estrelas_cheias(),
@@ -85,10 +76,11 @@ class CarrinhoProduto(models.Model):
 class Subcategoria(models.Model):
     nome = models.CharField(max_length=100)
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
-    produto = models.ForeignKey(Produto, on_delete=models.CASCADE, related_name='subcategorias', default=1)
 
     def __str__(self):
         return self.nome
+
+
 
 
 class Pedido(models.Model):
@@ -102,25 +94,7 @@ class Pedido(models.Model):
     def __str__(self):
         return f"Pedido de {self.quantidade}x {self.produto.nome} em {self.data_pedido.strftime('%d/%m/%Y %H:%M')}"
 
-def lista_perfis(request):
-    perfis = Perfil.objects.all()
-    return render(request, 'lista_perfis.html', {'perfis': perfis})
 
-from web.models import Categoria
-from django.utils.text import slugify
 
-def generate_unique_slug(instance, slug_field, slug_base):
-    slug = slugify(slug_base)
-    model = instance.__class__
-    unique_slug = slug
-    num = 1
-    while model.objects.filter(**{slug_field: unique_slug}).exclude(pk=instance.pk).exists():
-        unique_slug = f"{slug}-{num}"
-        num += 1
-    return unique_slug
-
-for categoria in Categoria.objects.all():
-    categoria.slug = generate_unique_slug(categoria, 'slug', categoria.nome)
-    categoria.save()
-
-print("Slugs únicos gerados e salvos com sucesso.")
+    
+    
