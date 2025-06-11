@@ -12,6 +12,5 @@ urlpatterns = [
     path('mudar-senha/', views.mudar_senha, name='mudar_senha'),
     path('perfil/', views.perfil, name='perfil'),
     path('perfis/', views.lista_perfis, name='lista_perfis'),
-    path('produtos/', views.produtos, name='produtos'),
    
 ]

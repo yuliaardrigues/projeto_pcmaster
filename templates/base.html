@@ -123,18 +123,20 @@
         <a href="{% url 'home' %}">PC MASTER</a>
       </div>
 
-      <form method="GET" action="{% url 'produtos' %}" class="relative">
+  <form method="GET" action="{% url 'produtos' %}" class="relative mb-4">
+
   <input
     name="q"
     type="text"
-    placeholder="Buscar"
-    class="w-full px-4 py-2 rounded text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-400"
-    value="{{ request.GET.q|default:'' }}"
+    placeholder="Buscar produtos"
+    class="w-full px-4 py-2 rounded text-black"
+    value="{{ search }}"
   />
   <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 text-green-600">
     🔍
   </button>
 </form>
+
 
 
       <div class="flex items-center gap-4 text-xl">

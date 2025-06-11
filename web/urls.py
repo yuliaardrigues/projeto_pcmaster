@@ -14,4 +14,5 @@ urlpatterns = [
     path('carrinho/adicionar/', views.adicionar_ao_carrinho, name='adicionar_ao_carrinho'),
     path('chatbot/', views.chatbot, name='chatbot'),
     path('categoria/<int:categoria_id>/', views.produtos_por_categoria, name='produtos_por_categoria'),
+    path('produtos/', views.todos_os_produtos, name='produtos'),
 ]

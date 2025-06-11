@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Produto, Categoria, Subcategoria, Pedido
+from .models import Subcategoria, Pedido
 from usuario.models import Perfil
 from django.views.decorators.http import require_http_methods
 from django.utils import timezone
@@ -7,10 +7,13 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
-from decimal import Decimal
-from django.http import JsonResponse
 import logging
 import requests
+from django.shortcuts import render
+import watson
+import ipdb
+from django.db.models import Q
+from web.models import Produto, Categoria
 
 @csrf_exempt
 def chatbot(request):
@@ -67,20 +70,13 @@ def home(request):
     produtos = Produto.objects.all()
     categorias = Categoria.objects.all()
     subcategorias = Subcategoria.objects.all()
-
-    # Produto para o banner (pode alterar o filtro se quiser outro critério)
-    try:
-        produto_banner = Produto.objects.get(nome__icontains="Xbox")
-    except Produto.DoesNotExist:
-        produto_banner = None
-
     return render(request, 'home/home.html', {
         'produtos': produtos,
         'categorias': categorias,
-        'subcategorias': subcategorias,
-        'produto_banner': produto_banner,
+        'subcategorias': subcategorias
     })
 
+from django.db.models import Q
 
 def produto(request, pk):
     produto = get_object_or_404(Produto, id=pk)
@@ -92,14 +88,21 @@ def produto(request, pk):
     })
 
 
-
 def todos_os_produtos(request):
-    produtos = Produto.objects.all()
+    search = request.GET.get('q', '')
     categorias = Categoria.objects.all()
-    return render(request, 'products/todos.html', {
+    produtos = Produto.objects.all()
+
+    if search:
+        produtos = produtos.filter(nome__icontains=search)
+
+    context = {
         'produtos': produtos,
-        'categorias': categorias
-    })
+        'categorias': categorias,
+        'search': search,
+    }
+    return render(request, 'products/todos.html', context)
+
 
 def adicionar_aos_favoritos(request, produto_id):
     favoritos = request.session.get('favoritos', [])
@@ -280,14 +283,5 @@ def produtos_por_categoria(request, categoria_id):
         'produtos': produtos
     })
 
-
-class DecimalEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, Decimal):
-            return float(obj)
-        return super(DecimalEncoder, self).default(obj)
-
-# Uso
-        return JsonResponse(data, encoder=DecimalEncoder)
 
 

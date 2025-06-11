@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2>Resultados para "{{ q }}"</h2>
+
+<div style="display: flex; flex-wrap: wrap; gap: 20px;">
+  {% for produto in produtos %}
+    <div style="border: 1px solid #ccc; border-radius: 8px; padding: 10px; width: 200px; text-align: center;">
+      {% if produto.imagem %}
+        <img src="{{ produto.imagem.url }}" alt="{{ produto.nome }}" style="width: 100%; height: auto; border-radius: 6px;">
+      {% else %}
+        <p>Sem imagem</p>
+      {% endif %}
+      <h3>{{ produto.nome }}</h3>
+      <p><strong>R$ {{ produto.preco }}</strong></p>
+    </div>
+  {% empty %}
+    <p>Nenhum produto encontrado.</p>
+  {% endfor %}
+</div>
+
+{% endblock %}
