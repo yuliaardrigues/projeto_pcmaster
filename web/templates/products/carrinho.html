@@ -53,7 +53,7 @@
               <form method="post" action="">
                 {% csrf_token %}
                 <input type="hidden" name="produto_id" value="{{ item.produto.id }}">
-                <button type="submit" name="action" value="remove" class="text-red-600 hover:underline">Remover</button>
+                <button type="submit" name="action" value="remove" class="text-red-600 hover:underline"><i class="bi bi-x-lg"></i></button>
               </form>
             </td>
           </tr>
@@ -66,7 +66,7 @@
       </table>
 
       <div class="mt-4 flex justify-between">
-        <a href="{% url 'home' %}" class="px-4 py-2 border rounded hover:bg-gray-100">← Voltar às compras</a>
+        <a href="{% url 'home' %}" class="px-4 py-2 border rounded hover:bg-gray-100"><i class="bi bi-arrow-left"></i></a>
         <a href="{% url 'carrinho' %}" class="px-4 py-2 border rounded hover:bg-gray-100">Atualizar Carrinho</a>
       </div>
     </div>

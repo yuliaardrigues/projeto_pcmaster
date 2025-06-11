@@ -21,7 +21,7 @@
 
             <div class="flex justify-between text-xs">
               <a href="{% url 'produto' produto.id %}" class="text-blue-600 hover:text-blue-800 transition">
-                🔍 Detalhes
+                <i class="bi bi-search"></i> Detalhes
               </a>
 
               <form action="{% url 'adicionar_ao_carrinho' produto.id %}" method="post" class="inline">
