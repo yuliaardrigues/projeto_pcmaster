@@ -42,7 +42,7 @@ GROQ_API_KEY = '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'
 def gerar_resposta_ia(pergunta, historico=None):
     try:
         produtos = Produto.objects.all()
-        contexto_produtos = "Aqui estão os produtos disponíveis:\n\n"
+        contexto_produtos = "Estes são os produtos disponíveis:\n\n"
         for p in produtos:
             contexto_produtos += (
                 f"Nome: {p.nome}\n"
@@ -55,15 +55,14 @@ def gerar_resposta_ia(pergunta, historico=None):
 
         prompt_sistema = (
             "Você é um especialista em produtos de informática. "
-            "Responda com base apenas nas informações abaixo, e continue a conversa se o usuário pedir mais detalhes sobre um produto mencionado anteriormente:\n\n" +
-            contexto_produtos
+            "Só responda com base nas informações dos produtos listados. "
+            "Se o usuário pedir mais detalhes sobre um produto mencionado anteriormente, mantenha o contexto da conversa.\n\n"
+            + contexto_produtos
         )
 
         mensagens = [{"role": "system", "content": prompt_sistema}]
-
         if historico:
-            mensagens += historico  # deve ser uma lista de {"role": ..., "content": ...}
-
+            mensagens += historico
         mensagens.append({"role": "user", "content": pergunta})
 
         response = requests.post(
@@ -81,22 +80,15 @@ def gerar_resposta_ia(pergunta, historico=None):
         )
 
         if response.status_code != 200:
-            print("Erro ao consultar Groq:", response.status_code, response.text)
+            print("Erro:", response.status_code, response.text)
             return "Erro ao acessar o assistente. Tente novamente mais tarde."
 
-        data = response.json()
-        choices = data.get("choices")
-        if not choices or not isinstance(choices, list):
-            print("Resposta inesperada da API:", data)
-            return "Erro: resposta inesperada do assistente."
-
-        resposta = choices[0]["message"]["content"]
+        resposta = response.json()["choices"][0]["message"]["content"]
         return resposta
 
     except Exception as e:
-        print("Erro ao consultar Groq:", e)
+        print("Erro:", e)
         return "Erro ao acessar o assistente. Tente novamente mais tarde."
-
 
 def home(request):
     produtos = Produto.objects.all()
