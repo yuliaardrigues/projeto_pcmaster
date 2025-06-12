@@ -1,36 +1,59 @@
-{% extends 'base.html' %} {% load static %} {% block content %}
+{% extends 'base.html' %} {% load static %} {% block content %} 
+<section class="bg-gray-100 rounded-lg m-2 px-4 py-6">
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
-<!-- Banner Promocional Xbox -->
-{% if produto_banner %}
-<section class="bg-gray-100 rounded-lg m-4 p-6 flex flex-col md:flex-row items-center justify-between">
-  <div class="max-w-md text-center md:text-left">
-    <p class="text-sm text-blue-500 font-semibold uppercase">
-      O MELHOR PREÇO DO MERCADO
-    </p>
-    <h2 class="text-3xl font-bold text-gray-800 my-2">{{ produto_banner.nome }}</h2>
-    <p class="text-gray-600 mb-4">{{ produto_banner.descricao }}</p>
-    <a href="{% url 'produto' produto_banner.id %}">
-      <button class="bg-green-600 text-white font-bold py-2 px-6 rounded hover:bg-green-700 transition flex items-center gap-2">
-        COMPRAR AGORA <i class="fas fa-arrow-right"></i>
-      </button>
-    </a>
-  </div>
+  {% if produtos_banner %}
+  <div x-data="{ activeSlide: 0, slides: {{ produtos_banner|length }} }" class="relative max-w-5xl mx-auto overflow-hidden rounded-xl bg-white shadow-md h-[360px]">
 
-  <div class="relative mt-6 md:mt-0">
-    <img
-      src="{{ produto_banner.imagem.url }}"
-      alt="{{ produto_banner.nome }}"
-      class="w-[280px] md:w-[320px]"
-    />
-    <div class="absolute top-0 right-0 bg-green-500 text-white text-lg font-semibold rounded-full px-4 py-1 shadow-lg">
-      R${{ produto_banner.preco }}
+    <div class="flex transition-transform duration-700 ease-in-out w-full" :style="`transform: translateX(-${activeSlide * 100}%);`">
+      {% for produto in produtos_banner %}
+        
+        <div class="min-w-full flex items-center justify-between px-4 py-4 gap-2 bg-gray-50">
+
+          
+          <div class="w-[300px] space-y-2 ml-auto">
+            <p class="text-xs text-blue-600 font-semibold uppercase">O melhor preço do mercado</p>
+            <h2 class="text-2xl font-bold">{{ produto.nome }}</h2>
+            <a href="{% url 'produto' produto.id %}" class="inline-block bg-green-600 text-white px-3 py-1.5 rounded hover:bg-green-700 transition text-sm font-semibold">
+              Comprar Agora
+            </a>
+          </div>
+
+          <div class="relative w-[400px] h-[320px] flex items-center justify-start mr-auto -ml-4">
+            <img src="{{ produto.imagem.url }}" alt="{{ produto.nome }}" class="object-contain max-h-full max-w-full" />
+            <span class="absolute top-3 right-5 bg-green-600 text-white px-1 py-1 rounded-full text-sm font-semibold">
+              R${{ produto.preco }}
+            </span>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+  
+    <button @click="activeSlide = (activeSlide - 1 + slides) % slides"
+            class="absolute top-1/2 left-2 -translate-y-1/2 bg-white bg-opacity-80 hover:bg-opacity-100 p-2 rounded-full shadow">
+      <i class="bi bi-chevron-compact-left"></i>
+    </button>
+    <button @click="activeSlide = (activeSlide + 1) % slides"
+            class="absolute top-1/2 right-2 -translate-y-1/2 bg-white bg-opacity-80 hover:bg-opacity-100 p-2 rounded-full shadow">
+      <i class="bi bi-chevron-compact-right"></i>
+    </button>
+
+    
+    <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex space-x-2">
+      <template x-for="i in slides" :key="i">
+        <div @click="activeSlide = i - 1"
+             class="w-2.5 h-2.5 rounded-full cursor-pointer"
+             :class="{'bg-green-600': activeSlide === i - 1, 'bg-gray-400': activeSlide !== i - 1}"></div>
+      </template>
     </div>
   </div>
+  {% else %}
+  <p class="text-center text-gray-500">Nenhum produto disponível para banner.</p>
+  {% endif %}
 </section>
-{% endif %}
 
 
-<!-- Benefícios -->
 <section
   class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8 p-4 text-center border-t border-gray-200"
 >
@@ -52,13 +75,11 @@
   </div>
 </section>
 
-<!-- Featured Products -->
-<!-- Produtos em destaque -->
 <section class="border rounded p-4">
   <div class="flex justify-between items-center mb-6">
     <h2 class="text-lg font-semibold">Melhores ofertas</h2>
     <a href="" class="text-sm text-blue-600 hover:underline"
-      >Todos os produtos →</a
+      >Todos os produtos </a
     >
   </div>
 
@@ -85,8 +106,6 @@
         class="w-full h-32 object-contain mx-auto"
       />
 
-    
-
       <div
         class="absolute inset-0 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition duration-300"
       >
@@ -98,17 +117,17 @@
           <i class="fas fa-heart text-green-600 text-sm"></i>
         </a>
         <form method="post" action="{% url 'carrinho' %}" class="inline">
-  {% csrf_token %}
-  <input type="hidden" name="produto_id" value="{{ produto.id }}">
-  <input type="hidden" name="action" value="increment">
-  <button
-    type="submit"
-    class="bg-white p-2 rounded-full shadow hover:scale-110 transition"
-    aria-label="Adicionar ao carrinho"
-  >
-    <i class="fas fa-shopping-cart text-black text-sm"></i>
-  </button>
-</form>
+          {% csrf_token %}
+          <input type="hidden" name="produto_id" value="{{ produto.id }}" />
+          <input type="hidden" name="action" value="increment" />
+          <button
+            type="submit"
+            class="bg-white p-2 rounded-full shadow hover:scale-110 transition"
+            aria-label="Adicionar ao carrinho"
+          >
+            <i class="fas fa-shopping-cart text-black text-sm"></i>
+          </button>
+        </form>
 
         <a
           href="{% url 'produto' produto.id %}"
@@ -122,9 +141,13 @@
       <div class="mt-2 text-sm font-semibold text-gray-800">
         {{ produto.nome }}
       </div>
-      <div class="text-yellow-500 text-xs mt-1">★★★★★ (32.677)</div>
+      <div class="text-yellow-500 text-xs mt-1">
+        {% for i in "12345"|slice:":produto.avaliacao_media" %} ★ {% endfor %}
+        ({{ produto.total_avaliacoes }})
+      </div>
 
-      {% if produto.sale_price %}
+      {% if produto.sale_price and produto.sale_price < produto.preco %}
+
       <strike class="text-gray-400">R${{ produto.preco }}</strike>
       <div class="text-green-600 font-bold">R${{ produto.sale_price }}</div>
       {% else %}
@@ -134,8 +157,6 @@
     {% endfor %}
   </div>
 </section>
-
-
 
 <link
   rel="stylesheet"
@@ -155,8 +176,6 @@
     </div>
   </div>
 </section>
-
-
 
 <!-- Font Awesome -->
 <link

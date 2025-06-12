@@ -94,10 +94,14 @@ def home(request):
     produtos = Produto.objects.all()
     categorias = Categoria.objects.all()
     subcategorias = Subcategoria.objects.all()
+    
+    produtos_banner = Produto.objects.all()[:5]  
+
     return render(request, 'home/home.html', {
         'produtos': produtos,
         'categorias': categorias,
-        'subcategorias': subcategorias
+        'subcategorias': subcategorias,
+        'produtos_banner': produtos_banner
     })
 
 from django.db.models import Q
