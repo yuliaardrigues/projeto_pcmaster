@@ -1,4 +1,7 @@
-{% extends 'base.html' %} {% load static %} {% block content %} 
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
 <section class="bg-gray-100 rounded-lg m-2 px-4 py-6">
   <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
@@ -7,10 +10,7 @@
 
     <div class="flex transition-transform duration-700 ease-in-out w-full" :style="`transform: translateX(-${activeSlide * 100}%);`">
       {% for produto in produtos_banner %}
-        
         <div class="min-w-full flex items-center justify-between px-4 py-4 gap-2 bg-gray-50">
-
-          
           <div class="w-[300px] space-y-2 ml-auto">
             <p class="text-xs text-blue-600 font-semibold uppercase">O melhor preço do mercado</p>
             <h2 class="text-2xl font-bold">{{ produto.nome }}</h2>
@@ -18,7 +18,6 @@
               Comprar Agora
             </a>
           </div>
-
           <div class="relative w-[400px] h-[320px] flex items-center justify-start mr-auto -ml-4">
             <img src="{{ produto.imagem.url }}" alt="{{ produto.nome }}" class="object-contain max-h-full max-w-full" />
             <span class="absolute top-3 right-5 bg-green-600 text-white px-1 py-1 rounded-full text-sm font-semibold">
@@ -29,7 +28,6 @@
       {% endfor %}
     </div>
 
-  
     <button @click="activeSlide = (activeSlide - 1 + slides) % slides"
             class="absolute top-1/2 left-2 -translate-y-1/2 bg-white bg-opacity-80 hover:bg-opacity-100 p-2 rounded-full shadow">
       <i class="bi bi-chevron-compact-left"></i>
@@ -39,7 +37,6 @@
       <i class="bi bi-chevron-compact-right"></i>
     </button>
 
-    
     <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex space-x-2">
       <template x-for="i in slides" :key="i">
         <div @click="activeSlide = i - 1"
@@ -53,10 +50,7 @@
   {% endif %}
 </section>
 
-
-<section
-  class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8 p-4 text-center border-t border-gray-200"
->
+<section class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8 p-4 text-center border-t border-gray-200">
   <div>
     <i class="fas fa-box-open text-2xl text-gray-700 mb-2"></i>
     <p class="text-sm font-semibold">ENTREGA EM TODO O BRASIL</p>
@@ -78,76 +72,52 @@
 <section class="border rounded p-4">
   <div class="flex justify-between items-center mb-6">
     <h2 class="text-lg font-semibold">Melhores ofertas</h2>
-    <a href="" class="text-sm text-blue-600 hover:underline"
-      >Todos os produtos </a
-    >
+    <a href="" class="text-sm text-blue-600 hover:underline">Todos os produtos</a>
   </div>
 
   <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
     {% for produto in produtos %}
     <div class="border rounded p-6 relative group">
       {% if produto.desconto_percentual > 0 %}
-      <div
-        class="absolute top-4 left-4 bg-red-500 text-white text-xs px-2 py-1 rounded"
-      >
+      <div class="absolute top-4 left-4 bg-red-500 text-white text-xs px-2 py-1 rounded">
         {{ produto.desconto_percentual }}% OFF
       </div>
-      {% endif %} {% if produto.sale %}
-      <div
-        class="absolute top-2 right-2 bg-yellow-400 text-white text-xs px-2 py-1 rounded"
-      >
+      {% endif %}
+      {% if produto.sale %}
+      <div class="absolute top-2 right-2 bg-yellow-400 text-white text-xs px-2 py-1 rounded">
         HOT
       </div>
       {% endif %}
 
-      <img
-        src="{{ produto.imagem.url }}"
-        alt="{{ produto.nome }}"
-        class="w-full h-32 object-contain mx-auto"
-      />
+      <img src="{{ produto.imagem.url }}" alt="{{ produto.nome }}" class="w-full h-32 object-contain mx-auto" />
 
-      <div
-        class="absolute inset-0 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition duration-300"
-      >
-        <a
-          href="{% url 'adicionar_aos_favoritos' produto.id %}"
-          class="bg-white p-2 rounded-full shadow hover:scale-110 transition"
-          aria-label="Favoritar"
-        >
+      <div class="absolute inset-0 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition duration-300">
+        <a href="{% url 'adicionar_aos_favoritos' produto.id %}"
+           class="bg-white p-2 rounded-full shadow hover:scale-110 transition" aria-label="Favoritar">
           <i class="fas fa-heart text-green-600 text-sm"></i>
         </a>
         <form method="post" action="{% url 'carrinho' %}" class="inline">
           {% csrf_token %}
           <input type="hidden" name="produto_id" value="{{ produto.id }}" />
           <input type="hidden" name="action" value="increment" />
-          <button
-            type="submit"
-            class="bg-white p-2 rounded-full shadow hover:scale-110 transition"
-            aria-label="Adicionar ao carrinho"
-          >
+          <button type="submit"
+                  class="bg-white p-2 rounded-full shadow hover:scale-110 transition" aria-label="Adicionar ao carrinho">
             <i class="fas fa-shopping-cart text-black text-sm"></i>
           </button>
         </form>
-
-        <a
-          href="{% url 'produto' produto.id %}"
-          class="bg-white p-2 rounded-full shadow hover:scale-110 transition"
-          aria-label="Ver detalhes do produto"
-        >
+        <a href="{% url 'produto' produto.id %}"
+           class="bg-white p-2 rounded-full shadow hover:scale-110 transition" aria-label="Ver detalhes do produto">
           <i class="fas fa-eye text-gray-800 text-sm"></i>
         </a>
       </div>
 
-      <div class="mt-2 text-sm font-semibold text-gray-800">
-        {{ produto.nome }}
-      </div>
+      <div class="mt-2 text-sm font-semibold text-gray-800">{{ produto.nome }}</div>
       <div class="text-yellow-500 text-xs mt-1">
         {% for i in "12345"|slice:":produto.avaliacao_media" %} ★ {% endfor %}
         ({{ produto.total_avaliacoes }})
       </div>
 
       {% if produto.sale_price and produto.sale_price < produto.preco %}
-
       <strike class="text-gray-400">R${{ produto.preco }}</strike>
       <div class="text-green-600 font-bold">R${{ produto.sale_price }}</div>
       {% else %}
@@ -158,29 +128,40 @@
   </div>
 </section>
 
-<link
-  rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-/>
+<section class="max-w-6xl mx-auto px-4 py-8">
+  <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Mais Vendidos</h2>
 
-<!-- Offers -->
-<section class="p-6">
-  <h2 class="text-xl font-bold mb-4">Special Offers</h2>
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-    <div class="bg-yellow-100 p-4 rounded text-center">
-      <p class="font-semibold">20% OFF</p>
-      <p>On Selected Items</p>
-      <button class="mt-2 px-4 py-1 bg-green-600 text-white rounded">
-        Shop Now
-      </button>
-    </div>
+  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+    {% for produto in produtos_mais_vendidos %}
+      <div class="bg-gray-100 border rounded-xl shadow-sm hover:shadow-md transition duration-300">
+        <img src="{{ produto.imagem.url }}" alt="{{ produto.nome }}"
+             class="w-full h-28 object-contain p-2 rounded-t-xl bg-white">
+
+        <div class="p-2 flex flex-col justify-between h-28">
+          <h3 class="text-xs font-semibold text-gray-800 mb-1 truncate">
+            {{ produto.nome }}
+          </h3>
+
+          <p class="text-green-600 text-base font-bold mb-1">
+            R$ {{ produto.preco|floatformat:2 }}
+          </p>
+
+          <div class="flex justify-between text-xs">
+            <a href="{% url 'produto' produto.id %}"
+               class="text-blue-600 hover:text-blue-800 transition whitespace-nowrap">
+              <i class="bi bi-search"></i> Ver
+            </a>
+            <button class="text-gray-500 hover:text-gray-700 transition">
+              <i class="bi bi-heart"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
   </div>
 </section>
 
-<!-- Font Awesome -->
-<link
-  rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-/>
 
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 {% endblock %}

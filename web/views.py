@@ -140,16 +140,16 @@ def home(request):
     categorias = Categoria.objects.all()
     subcategorias = Subcategoria.objects.all()
     
-    produtos_banner = Produto.objects.all()[:5]  
+    produtos_banner = produtos[:5]  # primeiros 5 produtos para o banner
+    produtos_mais_vendidos = produtos.order_by('?')[:8]  # simulando mais vendidos com 8 produtos aleatórios por enquanto
 
     return render(request, 'home/home.html', {
         'produtos': produtos,
         'categorias': categorias,
         'subcategorias': subcategorias,
-        'produtos_banner': produtos_banner
+        'produtos_banner': produtos_banner,
+        'produtos_mais_vendidos': produtos_mais_vendidos,
     })
-
-from django.db.models import Q
 
 def produto(request, pk):
     produto = get_object_or_404(Produto, id=pk)
@@ -199,30 +199,26 @@ def carrinho(request):
         produto = get_object_or_404(Produto, id=produto_id)
         produto_id = str(produto_id)
 
-        # Inicializa no carrinho caso não exista
         if produto_id not in carrinho:
             carrinho[produto_id] = 0
 
         if action == 'increment':
             carrinho[produto_id] += 1
 
-        if action == 'decrement':
-          carrinho[produto_id] = max(carrinho[produto_id] - 1, 0)
-          if carrinho[produto_id] == 0:
-            del carrinho[produto_id]
+        elif action == 'decrement':
+            carrinho[produto_id] = max(carrinho[produto_id] - 1, 0)
+            if carrinho[produto_id] == 0:
+                del carrinho[produto_id]
 
         elif action == 'update':
             try:
                 quantidade = int(request.POST.get('quantidade', 1))
-                if quantidade < 1:
-                    quantidade = 1
-                carrinho[produto_id] = quantidade
+                carrinho[produto_id] = max(quantidade, 1)
             except ValueError:
                 pass
 
         elif action == 'remove':
-            if produto_id in carrinho:
-                del carrinho[produto_id]
+            carrinho.pop(produto_id, None)
 
         request.session['carrinho'] = carrinho
         return redirect('carrinho')
@@ -232,9 +228,10 @@ def carrinho(request):
     subtotal = 0
     for pid, qtd in carrinho.items():
         try:
-            produto = get_object_or_404(Produto, id=pid)
-        except ValueError:
+            produto = Produto.objects.get(id=pid)
+        except Produto.DoesNotExist:
             continue
+
         subtotal_item = produto.preco * qtd
         subtotal += subtotal_item
         itens.append({
@@ -243,7 +240,7 @@ def carrinho(request):
             'subtotal': subtotal_item,
         })
 
-    desconto = 0  # Ajuste para seu sistema de cupons
+    desconto = 0  # Ajuste para cupons
     total = subtotal - desconto
 
     contexto = {

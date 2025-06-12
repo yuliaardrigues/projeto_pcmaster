@@ -7,7 +7,7 @@ from django.utils.text import slugify
 
 class Categoria(models.Model):
     nome = models.CharField(max_length=100)
-    # slug = models.SlugField(unique=True, blank=True)  # pode ficar em branco para gerar automaticamente
+    slug = models.SlugField(unique=True, blank=True, null=True)  # Agora o campo existe
 
     def save(self, *args, **kwargs):
         if not self.slug:
