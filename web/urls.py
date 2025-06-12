@@ -18,5 +18,6 @@ urlpatterns = [
     path('categoria/<int:categoria_id>/', views.produtos_por_categoria, name='produtos_por_categoria'),
     path('produtos/', views.todos_os_produtos, name='produtos'),
     path('conferir_pontos/', views.conferir_pontos, name='conferir_pontos'),
+     
 
 ]

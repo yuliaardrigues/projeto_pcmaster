@@ -254,27 +254,32 @@ def carrinho(request):
     return render(request, 'products/carrinho.html', contexto)
 
 
-@login_required  # remova se quiser permitir checkout sem login
+#@login_required  # remove se quiser permitir checkout sem login
 def finalizar_pedido(request):
-
     carrinho = request.session.get("carrinho", {})
 
     if not carrinho:
         return redirect("carrinho")
 
-    itens, subtotal, desconto = [], 0, 0  # implemente cupons no futuro
+    itens = []
+    subtotal = 0
+    desconto = 0  # futuro uso para cupons
 
-    # ----- monta lista de itens -----
+    # Monta a lista de itens válidos
     for pid, qtd in carrinho.items():
         try:
             pid_int = int(pid)
         except (ValueError, TypeError):
             continue  # ignora IDs inválidos
 
-        produto = get_object_or_404(Produto, id=pid_int)
+        produto = Produto.objects.filter(id=pid_int).first()
+        if not produto:
+            # Produto não existe mais, ignora esse item
+            continue
 
         subtotal_item = produto.preco * qtd
         subtotal += subtotal_item
+
         itens.append({
             "produto": produto,
             "quantidade": qtd,
@@ -283,11 +288,11 @@ def finalizar_pedido(request):
 
     total = subtotal - desconto
 
-    # ----- grava pedido -----
     if request.method == "POST":
+        # Grava os pedidos no banco
         for item in itens:
             Pedido.objects.create(
-                usuario=request.user,  # adicione este FK ao model
+                usuario=request.user,
                 produto=item["produto"],
                 quantidade=item["quantidade"],
                 valor_total=item["subtotal"],
@@ -295,22 +300,17 @@ def finalizar_pedido(request):
                 data_pedido=timezone.now(),
             )
 
-        # pontos de fidelidade (1 ponto por R$ 10,00)
-        try:
-            perfil = request.user.perfil
-        except Perfil.DoesNotExist:
-            perfil = Perfil.objects.create(usuario=request.user)
-
-        perfil.pontos += int(total / 10)
+        # Atualiza pontos de fidelidade
+        perfil, created = Perfil.objects.get_or_create(usuario=request.user)
+        perfil.pontos += int(total / 10)  # 1 ponto por R$ 10,00
         perfil.save()
 
-        # limpa carrinho
+        # Limpa carrinho
         request.session["carrinho"] = {}
         request.session.modified = True
 
         return redirect("home")
 
-    # ----- exibe página -----
     contexto = {
         "itens": itens,
         "subtotal": subtotal,
