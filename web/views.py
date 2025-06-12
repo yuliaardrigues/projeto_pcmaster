@@ -25,7 +25,6 @@ def chatbot(request):
             data = json.loads(request.body)
             user_message = data.get("message", "")
 
-            # Aqui você integraria seu modelo de linguagem ou lógica de resposta
             resposta = gerar_resposta_ia(user_message)
 
 
@@ -40,7 +39,7 @@ import requests
 
 GROQ_API_KEY = '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'
 
-def gerar_resposta_ia(pergunta):
+def gerar_resposta_ia(pergunta, historico=None):
     try:
         produtos = Produto.objects.all()
         contexto_produtos = "Aqui estão os produtos disponíveis:\n\n"
@@ -50,14 +49,22 @@ def gerar_resposta_ia(pergunta):
                 f"Descrição: {p.descricao}\n"
                 f"Preço: R${p.preco:.2f}\n"
                 f"Em promoção: {'Sim, por R$'+str(p.sale_price) if p.sale else 'Não'}\n"
-                f"Nota: {p.nota}\n\n"
+                f"Nota: {p.nota}\n"
+                f"Link: /produto/{p.id}/\n\n"
             )
 
         prompt_sistema = (
             "Você é um especialista em produtos de informática. "
-            "Responda com base apenas nas informações abaixo:\n\n" +
+            "Responda com base apenas nas informações abaixo, e continue a conversa se o usuário pedir mais detalhes sobre um produto mencionado anteriormente:\n\n" +
             contexto_produtos
         )
+
+        mensagens = [{"role": "system", "content": prompt_sistema}]
+
+        if historico:
+            mensagens += historico  # deve ser uma lista de {"role": ..., "content": ...}
+
+        mensagens.append({"role": "user", "content": pergunta})
 
         response = requests.post(
             "https://api.groq.com/openai/v1/chat/completions",
@@ -67,10 +74,7 @@ def gerar_resposta_ia(pergunta):
             },
             json={
                 "model": "llama3-8b-8192",
-                "messages": [
-                    {"role": "system", "content": prompt_sistema},
-                    {"role": "user", "content": pergunta}
-                ],
+                "messages": mensagens,
                 "temperature": 0.7
             },
             timeout=60
@@ -86,11 +90,13 @@ def gerar_resposta_ia(pergunta):
             print("Resposta inesperada da API:", data)
             return "Erro: resposta inesperada do assistente."
 
-        return choices[0]["message"]["content"]
+        resposta = choices[0]["message"]["content"]
+        return resposta
 
     except Exception as e:
         print("Erro ao consultar Groq:", e)
         return "Erro ao acessar o assistente. Tente novamente mais tarde."
+
 
 def home(request):
     produtos = Produto.objects.all()
