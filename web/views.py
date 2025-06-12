@@ -39,25 +39,68 @@ import requests
 
 GROQ_API_KEY = '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'
 
-def gerar_resposta_ia(pergunta, historico=None):
+def gerar_resposta_ia(pergunta, historico=None, request=None):
     try:
         produtos = Produto.objects.all()
-        contexto_produtos = "Estes são os produtos disponíveis:\n\n"
+        contexto_produtos = ""
+        palavras_chave_mapeadas = {}  # nome simplificado → nome real do produto
+
         for p in produtos:
+            nome_formatado = p.nome.lower()
+            palavras_chave = set(nome_formatado.split())  # divide em palavras-chave simples
+
+            # Adiciona nome completo e palavras-chave simplificadas
+            for chave in palavras_chave:
+                palavras_chave_mapeadas[chave] = p.nome
+            palavras_chave_mapeadas[nome_formatado] = p.nome
+
             contexto_produtos += (
+                f"[Produto]\n"
                 f"Nome: {p.nome}\n"
                 f"Descrição: {p.descricao}\n"
                 f"Preço: R${p.preco:.2f}\n"
-                f"Em promoção: {'Sim, por R$'+str(p.sale_price) if p.sale else 'Não'}\n"
+                f"Em promoção: {'Sim, por R$' + str(p.sale_price) if p.sale else 'Não'}\n"
                 f"Nota: {p.nota}\n"
-                f"Link: /produto/{p.id}/\n\n"
+                f"Link: /produto/{p.id}/\n"
+                f"[/Produto]\n\n"
             )
 
+        # Identifica o produto mencionado na pergunta
+        pergunta_lower = pergunta.lower()
+        produto_mencionado = None
+        for chave, nome_real in palavras_chave_mapeadas.items():
+            if chave in pergunta_lower:
+                produto_mencionado = nome_real
+                break
+
+        # Se mencionou, salva na sessão
+        if request and produto_mencionado:
+            request.session["ultimo_produto"] = produto_mencionado
+        elif request:
+            produto_mencionado = request.session.get("ultimo_produto")
+
+        # Mensagem adicional sobre o produto em foco
+        contexto_adicional = ""
+        if produto_mencionado:
+            contexto_adicional = f"O usuário está se referindo ao produto: {produto_mencionado}."
+
+        # Prompt do sistema
         prompt_sistema = (
-            "Você é um especialista em produtos de informática. "
-            "Só responda com base nas informações dos produtos listados. "
-            "Se o usuário pedir mais detalhes sobre um produto mencionado anteriormente, mantenha o contexto da conversa.\n\n"
-            + contexto_produtos
+            "Você é um especialista em produtos de informática do nosso site. "
+            "Sua função é responder perguntas dos usuários com base exclusivamente nas informações fornecidas a seguir.\n\n"
+
+            "Regras importantes que você deve seguir:\n"
+            "1. Nunca mencione produtos que o usuário não citou diretamente.\n"
+            "2. Não invente informações. Use apenas os dados listados.\n"
+            "3. Se o usuário fizer uma pergunta ambígua como 'ele é sem fio?', assuma que ele está falando do último produto mencionado na conversa.\n"
+            "4. Se o usuário não tiver mencionado nenhum produto antes, peça que ele diga o nome ou tipo do produto.\n"
+            "5. Se a informação solicitada não estiver disponível no conteúdo fornecido, diga que não há dados sobre isso.\n"
+            "6. Seja direto, claro e técnico, sem floreios ou suposições.\n\n"
+            "7. Sempre que mencionar um produto, inclua seu link no final da resposta no formato: [Ver produto](URL).\n\n"
+
+            "Abaixo está a lista completa dos produtos disponíveis:\n\n"
+            + contexto_produtos +
+            (f"\n\n{contexto_adicional}" if contexto_adicional else "")
         )
 
         mensagens = [{"role": "system", "content": prompt_sistema}]
@@ -89,6 +132,8 @@ def gerar_resposta_ia(pergunta, historico=None):
     except Exception as e:
         print("Erro:", e)
         return "Erro ao acessar o assistente. Tente novamente mais tarde."
+
+
 
 def home(request):
     produtos = Produto.objects.all()
